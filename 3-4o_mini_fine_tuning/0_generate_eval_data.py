@@ -9,7 +9,7 @@ from openai import OpenAI
 client = OpenAI()
 
 # Script params
-n_samples = 100
+n_samples = 12
 n_self_reflection_loops = 1
 
 # %%
@@ -258,3 +258,5 @@ os.makedirs("./data", exist_ok=True)
 df[["input", "prompt", "reasoning", "correct_output"]].to_csv(
     "./data/{}.csv".format(test_name), index=False
 )
+
+print("\nSaved file to ./data/{}.csv".format(test_name))
