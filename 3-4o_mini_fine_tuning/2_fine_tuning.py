@@ -1,4 +1,6 @@
 # %%
+from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor
 from openai import OpenAI
 import pandas as pd
 import json
@@ -22,14 +24,15 @@ random.shuffle(indices)
 
 train_indices, test_indices = (
     indices[: int(len(df) * 0.7)],
-    indices[int(len(df) * 0.7) :],
+    indices[int(len(df) * 0.7):],
 )
 
 df.loc[train_indices].to_csv(
     "./data/{}.csv".format(run_name + "_train"),
     index=False,
 )
-df.loc[test_indices].to_csv("./data/{}.csv".format(run_name + "_test"), index=False)
+df.loc[test_indices].to_csv(
+    "./data/{}.csv".format(run_name + "_test"), index=False)
 
 print(
     f"Number of training samples: {len(train_indices)}, Number of testing samples: {len(test_indices)}"
@@ -78,13 +81,12 @@ for idx, row in df.iterrows():
     )
 
 # get completions from gpt-4o
-from concurrent.futures import ThreadPoolExecutor
-from tqdm import tqdm
 
 
 def process_message(msg):
     res = client.chat.completions.create(model="gpt-4o", messages=msg)
-    msg.append({"role": "assistant", "content": res.choices[0].message.content})
+    msg.append(
+        {"role": "assistant", "content": res.choices[0].message.content})
     return msg
 
 
