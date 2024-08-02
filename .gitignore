@@ -2,3 +2,7 @@
 __pycache__/
 .DS_Store
 __pycache__/
+
+3-4o_mini_fine_tuning/prompts/*
+3-4o_mini_fine_tuning/evals/*
+3-4o_mini_fine_tuning/data/*
