@@ -9,7 +9,7 @@ from openai import OpenAI
 client = OpenAI()
 
 # Script params
-n_samples = 12
+n_samples = 100
 n_self_reflection_loops = 1
 
 # %%
@@ -183,7 +183,8 @@ def process_self_reflections_parallel(cases):
     with ThreadPoolExecutor() as executor:
         results = list(
             tqdm(
-                executor.map(lambda x: self_reflect_and_validate_case(x), cases),
+                executor.map(
+                    lambda x: self_reflect_and_validate_case(x), cases),
                 total=len(cases),
                 desc="Reflecting to correct logic and labels",
             )
@@ -217,12 +218,14 @@ for i in range(n_self_reflection_loops):
     )
     print(f"Fraction of incorrect cases: {fraction_incorrect:.2f}")
 
-    self_critique_results_list_all.append((fraction_incorrect, self_critique_results))
+    self_critique_results_list_all.append(
+        (fraction_incorrect, self_critique_results))
 
     if fraction_incorrect == 0:
         break
 
-    all_cases_corrected_current = [i.get("updated_case") for i in self_critique_results]
+    all_cases_corrected_current = [
+        i.get("updated_case") for i in self_critique_results]
 
 
 # %%
@@ -244,7 +247,8 @@ prompt_template = """Triage the provided customer service chat into one of the p
 {{input}}"""
 
 df["prompt"] = df["input"].apply(
-    lambda x: prompt_template.replace("{{classes}}", classes).replace("{{input}}", x)
+    lambda x: prompt_template.replace(
+        "{{classes}}", classes).replace("{{input}}", x)
 )
 
 print("Prompt sample:")
