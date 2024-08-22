@@ -1,0 +1,46 @@
+{
+    "title": "Free_Cash_Flow_Less_Principal_Repayments",
+    "report_date": "Q423",
+    "data": [
+        {
+            "quarter": "Q4 2022",
+            "operating_cash_flow": 46752,
+            "purchases_of_property_and_equipment": -58321,
+            "principal_repayments_of_finance_leases": -7941,
+            "principal_repayments_of_financing_obligations": -248,
+            "free_cash_flow_less_principal_repayments": -19758
+        },
+        {
+            "quarter": "Q1 2023",
+            "operating_cash_flow": 54330,
+            "purchases_of_property_and_equipment": -57649,
+            "principal_repayments_of_finance_leases": -6544,
+            "principal_repayments_of_financing_obligations": -226,
+            "free_cash_flow_less_principal_repayments": -10089
+        },
+        {
+            "quarter": "Q2 2023",
+            "operating_cash_flow": 61841,
+            "purchases_of_property_and_equipment": -53963,
+            "principal_repayments_of_finance_leases": -5705,
+            "principal_repayments_of_financing_obligations": -244,
+            "free_cash_flow_less_principal_repayments": 1929
+        },
+        {
+            "quarter": "Q3 2023",
+            "operating_cash_flow": 71654,
+            "purchases_of_property_and_equipment": -50220,
+            "principal_repayments_of_finance_leases": -5245,
+            "principal_repayments_of_financing_obligations": -260,
+            "free_cash_flow_less_principal_repayments": 15929
+        },
+        {
+            "quarter": "Q4 2023",
+            "operating_cash_flow": 84946,
+            "purchases_of_property_and_equipment": -48133,
+            "principal_repayments_of_finance_leases": -4384,
+            "principal_repayments_of_financing_obligations": -271,
+            "free_cash_flow_less_principal_repayments": 32158
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "title": "Free_Cash_Flow_Reconciliation",
+    "report_date": "Q422",
+    "data": [
+        {
+            "quarter": "Q4 2021",
+            "operating_cash_flow": 46327,
+            "purchases_of_property_and_equipment": -55396,
+            "free_cash_flow": -9069
+        },
+        {
+            "quarter": "Q1 2022",
+            "operating_cash_flow": 39324,
+            "purchases_of_property_and_equipment": -57951,
+            "free_cash_flow": -18627
+        },
+        {
+            "quarter": "Q2 2022",
+            "operating_cash_flow": 35574,
+            "purchases_of_property_and_equipment": -59061,
+            "free_cash_flow": -23487
+        },
+        {
+            "quarter": "Q3 2022",
+            "operating_cash_flow": 39665,
+            "purchases_of_property_and_equipment": -59351,
+            "free_cash_flow": -19686
+        },
+        {
+            "quarter": "Q4 2022",
+            "operating_cash_flow": 46752,
+            "purchases_of_property_and_equipment": -58321,
+            "free_cash_flow": -11569
+        }
+    ]
+}
