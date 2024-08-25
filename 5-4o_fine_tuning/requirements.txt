@@ -1,0 +1,8 @@
+datasets
+openai
+pydantic
+scikit_learn
+sentence_transformers
+streamlit
+tenacity
+tiktoken
