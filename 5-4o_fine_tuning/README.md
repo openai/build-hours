@@ -29,3 +29,4 @@ Example command to run an evaluation with the `gpt-4o` 5-shot:
 python eval.py --model gpt-4o --n_shot 5
 ```
 
+<img width="670" alt="image" src="https://github.com/user-attachments/assets/679a3505-57f5-4cb1-9e71-695660356ea1">
