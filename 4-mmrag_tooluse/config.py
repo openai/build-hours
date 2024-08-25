@@ -45,4 +45,3 @@ Assistant: sql_db
 
 If uncertain, choose the data source that best fits the majority of the query's requirements based on the available information.
 """
-

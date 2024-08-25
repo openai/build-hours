@@ -23,12 +23,6 @@ def get_database_info(conn):
     table_dicts = []
     for table_name in get_table_names(conn):
         columns_names = get_column_names(conn, table_name)
-        table_dicts.append({"table_name": table_name, "column_names": columns_names})
+        table_dicts.append(
+            {"table_name": table_name, "column_names": columns_names})
     return table_dicts
-
-
-
-
-
-
-

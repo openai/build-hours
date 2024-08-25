@@ -23,7 +23,7 @@ from qdrant_client.http.models import VectorParams, Distance
 
 # %%
 
-## docker run -d -p 6333:6333 qdrant/qdrant
+# docker run -d -p 6333:6333 qdrant/qdrant
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -31,6 +31,8 @@ logger = logging.getLogger(__name__)
 # %%
 
 # Configuration
+
+
 class Config:
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     QDRANT_HOST = 'localhost'
@@ -42,10 +44,12 @@ class Config:
     EMBEDDING_MODEL = "text-embedding-3-small"
     GPT_MODEL = "gpt-4o-2024-08-06"
 
+
 # Initialize clients
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 qdrant_client = QdrantClient(host=Config.QDRANT_HOST, port=Config.QDRANT_PORT)
+
 
 def encode_image(image: Image) -> str:
     """
@@ -55,6 +59,7 @@ def encode_image(image: Image) -> str:
     image.save(buffered, format="PNG")
     img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
     return img_str
+
 
 def pdf_to_base64_images(pdf_path: str) -> List[str]:
     """
@@ -78,6 +83,7 @@ def pdf_to_base64_images(pdf_path: str) -> List[str]:
         logger.error(f"Error processing PDF {pdf_path}: {e}")
         return []
 
+
 def save_base64_image(base64_image: str, folder: str, filename: str) -> str:
     """
     Saves a base64 encoded image to a file and returns the file path.
@@ -87,6 +93,7 @@ def save_base64_image(base64_image: str, folder: str, filename: str) -> str:
     with open(file_path, "w") as f:
         f.write(base64_image)
     return file_path
+
 
 def process_folder(folder: str, base64_output_folder: str) -> List[Dict[str, str]]:
     """
@@ -104,15 +111,18 @@ def process_folder(folder: str, base64_output_folder: str) -> List[Dict[str, str
                 base64_images = pdf_to_base64_images(pdf_path)
                 for i, base64_image in enumerate(base64_images):
                     base64_filename = f"{os.path.splitext(file)[0]}_page_{i}.txt"
-                    base64_path = save_base64_image(base64_image, base64_output_folder, base64_filename)
+                    base64_path = save_base64_image(
+                        base64_image, base64_output_folder, base64_filename)
                     images_data.append({
-                        'quarter_info': quarter_info, 
+                        'quarter_info': quarter_info,
                         'base64_image_path': base64_path,
                         'original_pdf_path': pdf_path
                     })
             else:
-                logger.warning(f"No quarter information found in filename: {file}")
+                logger.warning(
+                    f"No quarter information found in filename: {file}")
     return images_data
+
 
 def analyze_image(base64_image: str, quarter_info: str) -> Dict:
     system_prompt = f"""
@@ -159,7 +169,8 @@ def analyze_image(base64_image: str, quarter_info: str) -> Dict:
             {
                 "role": "user",
                 "content": [
-                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_image}", "detail": "high"}}
+                    {"type": "image_url", "image_url": {
+                        "url": f"data:image/png;base64,{base64_image}", "detail": "high"}}
                 ]
             }
         ],
@@ -206,7 +217,8 @@ def parse_table(base64_image: str, table_title: str, report_date: str) -> Dict:
             "role": "user",
             "content": [
                 {"type": "text", "text": "Please extract and format the data from the following table image according to the provided JSON schema."},
-                {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_image}", "detail": "high"}}
+                {"type": "image_url", "image_url": {
+                    "url": f"data:image/png;base64,{base64_image}", "detail": "high"}}
             ]
         }
     ]
@@ -233,6 +245,7 @@ def parse_table(base64_image: str, table_title: str, report_date: str) -> Dict:
         logger.error(f"Error in parse_table: {e}")
         return {}
 
+
 def process_single_image(image_data: Dict[str, str]) -> Dict:
     """
     Processes a single image: analyzes it and, if it's a table, parses it.
@@ -255,6 +268,7 @@ def process_single_image(image_data: Dict[str, str]) -> Dict:
 
     return analysis
 
+
 def process_images_concurrently(images_data: List[Dict[str, str]]) -> List[Dict]:
     """
     Processes all images concurrently using ThreadPoolExecutor.
@@ -263,12 +277,14 @@ def process_images_concurrently(images_data: List[Dict[str, str]]) -> List[Dict]
         results = list(executor.map(process_single_image, images_data))
     return results
 
+
 def get_embedding(text: str, model: str = Config.EMBEDDING_MODEL) -> List[float]:
     """
     Retrieves the embedding for the provided text using OpenAI's embedding model.
     """
     text = text.replace("\n", " ")
     return client.embeddings.create(input=[text], model=model).data[0].embedding
+
 
 def create_qdrant_collection(collection_name: str, vector_size: int, distance_metric: str = 'Cosine'):
     """
@@ -281,7 +297,9 @@ def create_qdrant_collection(collection_name: str, vector_size: int, distance_me
             distance=distance_metric
         )
     )
-    logger.info(f"Collection '{collection_name}' created with vector size {vector_size} and distance metric '{distance_metric}'.")
+    logger.info(
+        f"Collection '{collection_name}' created with vector size {vector_size} and distance metric '{distance_metric}'.")
+
 
 def insert_data_to_qdrant(
     client: QdrantClient,
@@ -295,7 +313,7 @@ def insert_data_to_qdrant(
     """
     if ids is None:
         ids = list(range(len(embeddings)))
-    
+
     points = [
         models.PointStruct(
             id=idx,
@@ -304,12 +322,14 @@ def insert_data_to_qdrant(
         )
         for idx, embedding, payload in zip(ids, embeddings, payloads)
     ]
-    
+
     client.upsert(
         collection_name=collection_name,
         points=points
     )
-    logger.info(f"Inserted {len(points)} records into collection '{collection_name}'.")
+    logger.info(
+        f"Inserted {len(points)} records into collection '{collection_name}'.")
+
 
 def query_qdrant(
     query: str,
@@ -321,13 +341,13 @@ def query_qdrant(
     Queries the Qdrant collection with the provided query string and returns the top_k results.
     """
     embedded_query = get_embedding(query, model=embedding_model)
-    
+
     search_results = qdrant_client.search(
         collection_name=collection_name,
         query_vector=embedded_query,
         limit=top_k
     )
-    
+
     output = []
     for result in search_results:
         payload = result.payload
@@ -336,8 +356,9 @@ def query_qdrant(
         base64_image_path = payload['base64_image_path']
         original_pdf_path = payload['original_pdf_path']
         output.append((title, text, base64_image_path, original_pdf_path))
-    
+
     return output
+
 
 def ask_database(conn, query):
     """Function to query SQLite database with a provided SQL query."""
@@ -414,15 +435,13 @@ TOOLS = [
 ]
 
 
- 
-
-
 class RAGSystem:
     def __init__(self):
         self.collection_name = Config.COLLECTION_NAME
 
     def process_folder(self):
-        images_data = process_folder(Config.SLIDES_FOLDER, Config.BASE64_OUTPUT_FOLDER)
+        images_data = process_folder(
+            Config.SLIDES_FOLDER, Config.BASE64_OUTPUT_FOLDER)
         if not images_data:
             logger.info("No images to process.")
             return None
@@ -434,7 +453,8 @@ class RAGSystem:
         return [item for item in image_categorizations if item]
 
     def prepare_data_for_indexing(self, image_categorizations):
-        non_table_images = [item for item in image_categorizations if item.get('image_category') != 'table']
+        non_table_images = [item for item in image_categorizations if item.get(
+            'image_category') != 'table']
         if not non_table_images:
             logger.info("No non-table images to process.")
             return None, None
@@ -456,15 +476,16 @@ class RAGSystem:
     def create_and_populate_collection(self, embeddings, payloads):
         vector_size = len(embeddings[0])
         create_qdrant_collection(self.collection_name, vector_size)
-        insert_data_to_qdrant(qdrant_client, self.collection_name, embeddings, payloads)
+        insert_data_to_qdrant(
+            qdrant_client, self.collection_name, embeddings, payloads)
 
     def query(self, query_text: str, top_k: int = 1) -> List[Tuple[str, str, str, str]]:
         return query_qdrant(query_text, top_k)
-    
+
     def generate_response(self, query: str, retrieved_results: List[Tuple[str, str, str, str]]) -> str:
         system_prompt = """You are an AI assistant specializing in analyzing financial documents and graphs. 
         Use the provided information and images to answer the user's query accurately and concisely."""
-        
+
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": [{"type": "text", "text": query}]}
@@ -473,12 +494,13 @@ class RAGSystem:
         for title, text, base64_image_path, _ in retrieved_results:
             with open(base64_image_path, 'r') as f:
                 base64_image = f.read()
-            
+
             messages.append({
                 "role": "user",
                 "content": [
                     {"type": "text", "text": f"Title: {title}\nContent: {text}"},
-                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_image}"}}
+                    {"type": "image_url", "image_url": {
+                        "url": f"data:image/png;base64,{base64_image}"}}
                 ]
             })
 
@@ -500,7 +522,8 @@ def process_and_index_data():
     images_data = rag_system.process_folder()
     if images_data:
         image_categorizations = rag_system.analyze_images(images_data)
-        embeddings, payloads = rag_system.prepare_data_for_indexing(image_categorizations)
+        embeddings, payloads = rag_system.prepare_data_for_indexing(
+            image_categorizations)
         if embeddings and payloads:
             rag_system.create_and_populate_collection(embeddings, payloads)
             logger.info("Data processing and indexing completed successfully.")
@@ -516,13 +539,13 @@ def query_qdrant(query: str, top_k: int = 1) -> str:
         embedding = get_embedding(query)
         if not embedding:
             return "Failed to retrieve embedding for the query."
-        
+
         search_result = qdrant_client.search(
             collection_name=Config.COLLECTION_NAME,
             query_vector=embedding,
             limit=top_k
         )
-        
+
         output = []
         for result in search_result:
             payload = result.payload
@@ -531,13 +554,13 @@ def query_qdrant(query: str, top_k: int = 1) -> str:
             base64_image_path = payload['base64_image_path']
             original_pdf_path = payload['original_pdf_path']
             output.append((title, text, base64_image_path, original_pdf_path))
-        
+
         return output
 
     except Exception as e:
         logger.error(f"Qdrant query failed: {e}")
         return f"Error querying Qdrant: {e}"
-    
+
 
 def query_rag_system(user_query):
     """
@@ -558,54 +581,52 @@ def query_rag_system(user_query):
             return response
 
 
-
-
 def main_loop():
     """Interactive loop for processing user queries."""
     print("Welcome to the Financial Assistant. Type 'exit' to quit.\n")
-    
+
     process_and_index_data()
     while True:
         user_query = input("User: ")
         if user_query.lower() in ["exit", "quit"]:
             print("Exiting the assistant. Goodbye!")
             break
-        
+
         messages = [
             {"role": "system", "content": TRIAGE_SYSTEM_PROMPT},
             {"role": "user", "content": user_query},
         ]
-        
-        response = client.chat.completions.create(
-                model='gpt-4o', 
-                messages=messages, 
-                tools= TOOLS, 
-                tool_choice="required")
-        
 
-        # Step 2: determine if the response from the model includes a tool call.   
+        response = client.chat.completions.create(
+            model='gpt-4o',
+            messages=messages,
+            tools=TOOLS,
+            tool_choice="required")
+
+        # Step 2: determine if the response from the model includes a tool call.
         tool_calls = response.choices[0].message.tool_calls
         if tool_calls:
-            # If true the model will return the name of the tool / function to call and the argument(s)  
+            # If true the model will return the name of the tool / function to call and the argument(s)
             tool_call_id = tool_calls[0].id
             tool_function_name = tool_calls[0].function.name
-            tool_query_string = json.loads(tool_calls[0].function.arguments)['query']
+            tool_query_string = json.loads(
+                tool_calls[0].function.arguments)['query']
 
-            # Step 3: Call the function and retrieve results. Append the results to the messages list.      
+            # Step 3: Call the function and retrieve results. Append the results to the messages list.
             if tool_function_name == 'ask_database':
                 results = ask_database(conn, tool_query_string)
-                
+
                 messages.append({
-                    "role":"tool", 
-                    "tool_call_id":tool_call_id, 
-                    "name": tool_function_name, 
-                    "content":results
+                    "role": "tool",
+                    "tool_call_id": tool_call_id,
+                    "name": tool_function_name,
+                    "content": results
                 })
             elif tool_function_name == 'query_qdrant':
-                results= query_rag_system(user_query)
+                results = query_rag_system(user_query)
 
-            print (results)    
-            
+            print(results)
+
 
 if __name__ == "__main__":
     main_loop()

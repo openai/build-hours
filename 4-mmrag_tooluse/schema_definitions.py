@@ -1,7 +1,7 @@
 schema_dict = {
     "Free_Cash_Flow_Reconciliation": {
         "type": "json_schema",
-            "json_schema": {
+        "json_schema": {
                 "name": "Free_Cash_Flow_Reconciliation",
                 "schema": {
                     "type": "object",
@@ -26,10 +26,10 @@ schema_dict = {
                     "required": ["report_date", "data", "title"],
                     "additionalProperties": False
                 },
-                "strict": False
-            }
+            "strict": False
+        }
     },
-    
+
     "Free_Cash_Flow_Less_Principal_Repayments": {
         "type": "json_schema",
         "json_schema": {
@@ -69,7 +69,7 @@ schema_dict = {
             "strict": False
         }
     },
-    
+
     "Free_Cash_Flow_Less_Equipment_Finance_Leases": {
         "type": "json_schema",
         "json_schema": {
