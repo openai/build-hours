@@ -8,7 +8,7 @@ Maintain the original code style and formatting unless it directly relates to th
 Pay attention to data flow between sources and sinks when provided.
 """
 
-# User Message
+# User Message (Partial code to show an example)
 USER_MSG = """
 Vulnerability Report:
 - Type: CWE-668
@@ -69,7 +69,7 @@ class AnalyticsApp:
 ...
 """
 
-# Assistant Message (Partial Code)
+# Assistant Message (Partial code to show an example)
 ASSISTANT_MSG = """
 import aioredis
 import sqlite3

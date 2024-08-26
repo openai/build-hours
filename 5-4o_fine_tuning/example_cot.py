@@ -4,7 +4,7 @@ You are an AI assistant specialized in fixing code vulnerabilities. Your task is
 """
 
 # User Message
-USER_MSG = """
+USER_MSG = """ (Partial code to show an example)
 Vulnerability Report:
 - Type: CWE-319
 - Location: lines 20-21

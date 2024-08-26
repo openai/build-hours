@@ -6,3 +6,4 @@ sentence_transformers
 streamlit
 tenacity
 tiktoken
+semgrep==1.85.0

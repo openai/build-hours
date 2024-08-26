@@ -37,7 +37,7 @@ def fetch_few_shot_train_examples(prompt: str, num_examples: int = 0, use_simila
     The function operates in two modes:
     1. Random Selection: If use_similarity is False, it randomly selects num_examples from the dataset.
     2. Similarity-based Selection: If use_similarity is True, it uses a two-step process:
-        a. Initial Retrieval: Uses a lightweight model to encode the prompt and user messages from the dataset, 
+        a. Initial Retrieval: Uses a lightweight model to encode the prompt and user messages from the dataset,
            and retrieves the top_k most similar examples based on cosine similarity.
         b. Reranking: Uses a cross-encoder model to rerank the initially retrieved examples and selects the top num_examples.
 
@@ -99,6 +99,15 @@ def clean_filename(name: str) -> str:
 def get_fixed_code_fine_tuned(prompt: str,
                               few_shot_messages,
                               model_name: str):
+    """
+    Generates corrected code for a given piece of code identified with vulnerabilities.
+
+    Steps:
+    1. Constructs a system message to set the context for the model.
+    2. Compiles messages from both the system and user, including the vulnerability report and original code, along with few-shot examples.
+    3. Cleans the corrected code snippet returned from the chat completion response.
+    4. Returns the cleaned, corrected code.
+    """
     system_message = (
         "You are an AI assistant specialized in fixing code vulnerabilities. "
         "Your task is to provide corrected code that addresses the reported security issue. "
@@ -129,12 +138,19 @@ def process_file(test_case, fixed_files, model_name: str, n_shot: int, use_simil
     """
     Processes a given test case file to identify and fix vulnerabilities using a specified model.
 
+    Steps:
+    1. Writes the source code from the test case to a new file in the 'staticeval' directory.
+    2. Uses the free version of `semgrep` to scan the newly written file for vulnerabilities.
+    3. If vulnerabilities are found, constructs a prompt detailing the vulnerability, optionally fetches few-shot training examples, and calls `get_fixed_code_fine_tuned`.
+    4. Writes the returned corrected code to a new file and rescans it with `semgrep` to verify the fix.
+    5. Updates the list of fixed files if the fix is successful.
+
     Args:
-        test_case (dict): A dictionary containing the test case details including 'source' and 'file_name'.
-        fixed_files (list): A list to store the names of files that have been successfully fixed.
-        model_name (str): The name of the model to use for generating fixes.
-        n_shot (int): The number of few-shot examples to use.
-        use_similarity (bool): Flag to determine if similarity-based retrieval of examples should be used.
+        test_case(dict): A dictionary containing the test case details, including 'source' and 'file_name'.
+        fixed_files(list): A list to store the names of files that have been successfully fixed.
+        model_name(str): The name of the model used for generating fixes.
+        n_shot(int): The number of few-shot examples to use.
+        use_similarity(bool): A flag to determine if similarity-based retrieval of examples should be used.
     """
     file_text = test_case["source"]
     file_name = test_case["file_name"]
@@ -249,14 +265,14 @@ def create_log_file(log_file_name: str,
     Creates a log file to record the evaluation results.
 
     Args:
-        log_file_name (str): The name of the log file.
-        model_name (str): The name of the model used for evaluation.
-        score (float): The evaluation score as a percentage.
-        passing_tests (int): The number of tests that passed.
-        total_tests (int): The total number of tests conducted.
-        fixed_files (list): A list of files that were fixed.
-        n_shot (int): The number of few-shot examples used.
-        use_similarity (bool): Whether similarity-based retrieval was used for n_shot.
+        log_file_name(str): The name of the log file.
+        model_name(str): The name of the model used for evaluation.
+        score(float): The evaluation score as a percentage.
+        passing_tests(int): The number of tests that passed.
+        total_tests(int): The total number of tests conducted.
+        fixed_files(list): A list of files that were fixed.
+        n_shot(int): The number of few-shot examples used.
+        use_similarity(bool): Whether similarity-based retrieval was used for n_shot.
     """
     os.makedirs('logs', exist_ok=True)
     with open(os.path.join('logs', log_file_name), 'w') as log_file:
