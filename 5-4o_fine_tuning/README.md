@@ -8,12 +8,19 @@ Demo code used in the gpt-4o fine-tuning webinar on Aug 26, 2024.
 
 ## Setup
 
-- Set your OpenAI API key ([docs](https://platform.openai.com/docs/quickstart)).
+1. Set your OpenAI API key ([docs](https://platform.openai.com/docs/quickstart)).
 
 ```bash
 export OPENAI_API_KEY="sk_XXX..."
 ```
+2. Install requirements by running the following commands:
+ ```bash
+# upgrade pip to the latest version
+python -m pip install -U pip
 
+# install the required packages
+pip install -r requirements.txt
+```
 
 ## Running Evals
 
