@@ -1,7 +1,7 @@
 Eval Results
 --------------------
 Timestamp: 2024-08-22 23:10:56
-Model: gpt-4o-2024-08-06
+Model: gpt-4o
 Score: 56.64%
 Semgrep Version: 1.85.0
 Passing Tests: 64 out of 113
