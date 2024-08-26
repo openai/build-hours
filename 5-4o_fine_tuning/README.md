@@ -43,3 +43,8 @@ Vulnerability Report:\n- Type: CWE-287\n- Location: lines 92-93\n- Description: 
 
 ```
 <img width="670" alt="image" src="https://github.com/user-attachments/assets/679a3505-57f5-4cb1-9e71-695660356ea1">
+
+### Acknowledgements
+
+The [training dataset](https://huggingface.co/datasets/patched-codes/synth-vuln-fixes) and evals utilized in this project are sourced from patched.codes. We extend our gratitude to the [patched.codes](https://www.patched.codes/) (S24) team for their valuable contributions.
+
