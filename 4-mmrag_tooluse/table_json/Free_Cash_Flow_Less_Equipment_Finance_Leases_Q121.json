@@ -1,0 +1,51 @@
+{
+    "title": "Free_Cash_Flow_Less_Equipment_Finance_Leases",
+    "report_date": "Q121",
+    "data": [
+        {
+            "quarter": "Q1 2020",
+            "operating_cash_flow": 39732,
+            "purchases_of_property_and_equipment": -15395,
+            "equipment_acquired_under_finance_leases": -12209,
+            "principal_repayments_of_other_finance_leases": -407,
+            "principal_repayments_of_financing_obligations": -43,
+            "free_cash_flow_less_equipment_finance_leases": 11678
+        },
+        {
+            "quarter": "Q2 2020",
+            "operating_cash_flow": 51220,
+            "purchases_of_property_and_equipment": -19368,
+            "equipment_acquired_under_finance_leases": -11952,
+            "principal_repayments_of_other_finance_leases": -415,
+            "principal_repayments_of_financing_obligations": -56,
+            "free_cash_flow_less_equipment_finance_leases": 19429
+        },
+        {
+            "quarter": "Q3 2020",
+            "operating_cash_flow": 55292,
+            "purchases_of_property_and_equipment": -25791,
+            "equipment_acquired_under_finance_leases": -11116,
+            "principal_repayments_of_other_finance_leases": -413,
+            "principal_repayments_of_financing_obligations": -68,
+            "free_cash_flow_less_equipment_finance_leases": 17904
+        },
+        {
+            "quarter": "Q4 2020",
+            "operating_cash_flow": 66064,
+            "purchases_of_property_and_equipment": -35044,
+            "equipment_acquired_under_finance_leases": -9104,
+            "principal_repayments_of_other_finance_leases": -427,
+            "principal_repayments_of_financing_obligations": -53,
+            "free_cash_flow_less_equipment_finance_leases": 21436
+        },
+        {
+            "quarter": "Q1 2021",
+            "operating_cash_flow": 67213,
+            "purchases_of_property_and_equipment": -40803,
+            "equipment_acquired_under_finance_leases": -8936,
+            "principal_repayments_of_other_finance_leases": -525,
+            "principal_repayments_of_financing_obligations": -103,
+            "free_cash_flow_less_equipment_finance_leases": 16846
+        }
+    ]
+}

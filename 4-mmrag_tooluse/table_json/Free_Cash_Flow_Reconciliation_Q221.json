@@ -1,0 +1,36 @@
+{
+    "title": "Free_Cash_Flow_Reconciliation",
+    "report_date": "Q221",
+    "data": [
+        {
+            "quarter": "Q2 2020",
+            "operating_cash_flow": 51220,
+            "purchases_of_property_and_equipment": -19368,
+            "free_cash_flow": 31852
+        },
+        {
+            "quarter": "Q3 2020",
+            "operating_cash_flow": 55292,
+            "purchases_of_property_and_equipment": -25791,
+            "free_cash_flow": 29501
+        },
+        {
+            "quarter": "Q4 2020",
+            "operating_cash_flow": 66064,
+            "purchases_of_property_and_equipment": -35044,
+            "free_cash_flow": 31020
+        },
+        {
+            "quarter": "Q1 2021",
+            "operating_cash_flow": 67213,
+            "purchases_of_property_and_equipment": -40803,
+            "free_cash_flow": 26410
+        },
+        {
+            "quarter": "Q2 2021",
+            "operating_cash_flow": 59322,
+            "purchases_of_property_and_equipment": -47176,
+            "free_cash_flow": 12146
+        }
+    ]
+}

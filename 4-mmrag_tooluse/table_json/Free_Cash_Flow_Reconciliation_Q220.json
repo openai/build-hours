@@ -1,0 +1,36 @@
+{
+    "title": "Free_Cash_Flow_Reconciliation",
+    "report_date": "Q220",
+    "data": [
+        {
+            "quarter": "Q2 2019",
+            "operating_cash_flow": 36029,
+            "purchases_of_property_and_equipment": -11011,
+            "free_cash_flow": 25018
+        },
+        {
+            "quarter": "Q3 2019",
+            "operating_cash_flow": 35332,
+            "purchases_of_property_and_equipment": -11868,
+            "free_cash_flow": 23464
+        },
+        {
+            "quarter": "Q4 2019",
+            "operating_cash_flow": 38514,
+            "purchases_of_property_and_equipment": -12689,
+            "free_cash_flow": 25825
+        },
+        {
+            "quarter": "Q1 2020",
+            "operating_cash_flow": 39732,
+            "purchases_of_property_and_equipment": -15395,
+            "free_cash_flow": 24337
+        },
+        {
+            "quarter": "Q2 2020",
+            "operating_cash_flow": 51220,
+            "purchases_of_property_and_equipment": -19368,
+            "free_cash_flow": 31852
+        }
+    ]
+}

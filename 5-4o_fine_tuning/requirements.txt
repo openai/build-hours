@@ -1,0 +1,9 @@
+datasets
+openai
+pydantic
+scikit_learn
+sentence_transformers
+streamlit
+tenacity
+tiktoken
+semgrep==1.85.0

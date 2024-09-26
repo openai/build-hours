@@ -1,0 +1,36 @@
+{
+    "title": "Free_Cash_Flow_Reconciliation",
+    "report_date": "Q224",
+    "data": [
+        {
+            "quarter": "Q2 2023",
+            "operating_cash_flow": 61841,
+            "purchases_of_property_and_equipment": -53963,
+            "free_cash_flow": 7878
+        },
+        {
+            "quarter": "Q3 2023",
+            "operating_cash_flow": 71654,
+            "purchases_of_property_and_equipment": -50220,
+            "free_cash_flow": 21434
+        },
+        {
+            "quarter": "Q4 2023",
+            "operating_cash_flow": 84946,
+            "purchases_of_property_and_equipment": -48133,
+            "free_cash_flow": 36813
+        },
+        {
+            "quarter": "Q1 2024",
+            "operating_cash_flow": 99147,
+            "purchases_of_property_and_equipment": -48998,
+            "free_cash_flow": 50149
+        },
+        {
+            "quarter": "Q2 2024",
+            "operating_cash_flow": 107952,
+            "purchases_of_property_and_equipment": -54979,
+            "free_cash_flow": 52973
+        }
+    ]
+}
