@@ -1,0 +1,78 @@
+/* src/App.css */
+.App {
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+  background-color: #f9fafb;
+  padding: 20px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .content {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .content > div {
+    width: 48%;
+  }
+}
+
+.scenario-input {
+  margin-bottom: 20px;
+}
+
+.scenario-input textarea {
+  width: 80%;
+  height: 100px;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.scenario-input button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin-left: 10px;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.plan-display,
+.execution-stream {
+  width: 45%;
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow-y: auto;
+  max-height: 500px;
+}
+
+.plan-display pre {
+  text-align: left;
+}
+
+.status {
+  color: #007bff;
+}
+
+.assistant {
+  color: #28a745;
+}
+
+.function-call {
+  color: #6c757d;
+}
+
+.error {
+  color: #dc3545;
+}
