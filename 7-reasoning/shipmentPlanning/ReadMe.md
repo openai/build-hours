@@ -11,6 +11,7 @@ If you don't already, have your OpenAI API key set as an environment variable `O
 
 ### Spin up the frontend
 - In a separate terminal, go to the frontend directory
+- Ensure you have Node.js version 21 or higher installed.
 - Run `npm i`
 - Run `npm start`
 - A window should automatically appear, but if not, navigate to your [httlocalhost:3000](http://localhost:3000/)
