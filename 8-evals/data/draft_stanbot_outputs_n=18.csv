@@ -1,0 +1,506 @@
+new_input_case,rationale,input,project_name,project_target_date,project_status,summary_key_points,summary
+1. Project name mentioned clearly,"I will create a standup meeting transcript involving at least 3 participants with software engineering roles. The conversation will include at least 8 back-and-forth exchanges, be casual in tone, and include speech disfluencies like 'um'. The project name 'Apollo Project' will be mentioned clearly, satisfying the new input case. This transcript will allow all output columns to be filled with relevant information.","[info] Standup time: 10/03/2024 09:15:00
+
+Alice: Hey team! Let's kick off with our updates. Remember, we're focusing on the Apollo Project this week.
+
+Bob: Sure thing, Alice. So, um, I've been working on the user authentication module for the Apollo Project. I hit a snag with the OAuth implementation, but I think I can resolve it by tomorrow.
+
+Charlie: I've been setting up the database schemas for Apollo. Got most of it done, but I need to sync with you, Bob, about the user data requirements.
+
+Bob: Yeah, let's catch up after this. Also, are we still aiming to complete the Apollo Project by October 30th?
+
+Alice: Yes, the target date is still October 30th. But let me know if there are any blockers.
+
+Charlie: Well, there is one issue. The API endpoints from the backend team aren't ready yet, so we're a bit, uh, blocked on that.
+
+Bob: Yeah, same here. Without those endpoints, testing is kinda tough.
+
+Alice: Understood. I'll escalate this. Overall, how do you feel about the Apollo Project status?
+
+Bob: I'd say it's at risk unless we get the endpoints soon.
+
+Charlie: Agreed.
+
+Alice: Okay, I'll see what I can do. Thanks, everyone.",Apollo Project,10/30/2024,At Risk,"- The team discussed updates on the Apollo Project.
+- Bob is working on user authentication but has issues with OAuth implementation.
+- Charlie is working on database schemas and needs to sync with Bob.
+- Both Bob and Charlie are blocked due to backend API endpoints not being ready.
+- The project is at risk of not meeting the target date of October 30th.
+- Alice will escalate the issue regarding backend API endpoints.","During the standup on October 3, 2024, the team discussed the Apollo Project. Bob is facing issues with the OAuth implementation in the user authentication module but expects to resolve them soon. Charlie has completed most of the database schemas but needs to coordinate with Bob on user data requirements. Both are blocked due to backend API endpoints not being ready, putting the project at risk of not meeting the October 30th target date. Alice will escalate the issue to help unblock the team."
+1. Project name mentioned clearly,"In this transcript, I will create a standup meeting involving three software engineers discussing the 'Phoenix' project, mentioning the project name clearly. The transcript will have at least 8 exchanges, include casual speech and fillers like 'um', 'like', etc.","[info] Standup time: 11/15/2024 09:15:00
+
+Emily: Hey team, let's kick off the standup. How's everyone doing on Project Phoenix?
+
+Raj: Hey Emily, um, I'm kind of stuck on integrating the new authentication module. It's giving me some weird errors.
+
+Lisa: Yeah, Raj, I ran into similar issues last week. Did you try updating to the latest API version?
+
+Raj: Oh, I didn't think of that. I'll give it a shot, thanks!
+
+Emily: Great collaboration! So, Lisa, any updates on the UI components?
+
+Lisa: Yeah, the main dashboard is like, almost done. Just need to polish a few things. Should have it wrapped up by tomorrow.
+
+Emily: Awesome. Our target date is still November 20th. Do you guys think we're on track?
+
+Raj: Well, if I can fix this auth issue today, I think we'll be good.
+
+Lisa: Yeah, I don't see any major blockers on my side.
+
+Emily: Perfect. Let's aim to have everything ready for the client review on the 20th.",Phoenix,11/20/2024,On Track,"- The team is working on Project Phoenix, with a target date of 11/20/2024.
+- Raj is experiencing issues integrating the new authentication module but will try updating the API version.
+- Lisa has nearly completed the main dashboard UI components; expects to finish by tomorrow.
+- The team believes they are on track for the client review on November 20th.","During the standup on 11/15/2024, Emily led the discussion on Project Phoenix. Raj reported issues with integrating the authentication module but plans to resolve them by updating the API version. Lisa is nearly finished with the dashboard UI components and expects to complete them by the next day. The team confirmed they are on track to meet the target date of 11/20/2024 for the client review."
+1. Project name mentioned clearly,"To create a test case where the project name is mentioned clearly, I will compose a standup meeting transcript involving at least three people discussing a project called 'Alpha Release'. The transcript will have at least 8 back and forths, and will include casual speech with 'ums' and other natural speech patterns.","[info] Standup time: 11/02/2024 09:00:00
+
+Emma: Hey team, let's get started. So, regarding the 'Alpha Release' project, how's everything progressing?
+
+Liam: Um, yeah, I've been working on the authentication module, and I hit a snag with the OAuth integration. Hoping to resolve it by today.
+
+Olivia: The UI components for the dashboard are coming together. I should have a demo ready by tomorrow.
+
+Emma: Great to hear. Liam, do you need any help with the OAuth stuff?
+
+Liam: Actually, Olivia, if you have some time later, maybe we can pair program and figure it out?
+
+Olivia: Yeah, sure thing. Ping me after lunch.
+
+Emma: Awesome. Our target date for the Alpha Release is still set for November 15th. Do you guys think we're on track?
+
+Liam: If I can get past this OAuth hurdle, I think we should be good.
+
+Olivia: From my side, it's looking on track.
+
+Emma: Perfect. Let's push through and make sure we're ready for the Alpha Release on the 15th.",Alpha Release,11/15/2024,On Track,"- Emma inquired about the progress on the 'Alpha Release' project.
+- Liam is facing issues with OAuth integration in the authentication module.
+- Olivia is progressing well on the UI components and will have a demo ready tomorrow.
+- Liam and Olivia will collaborate to resolve the OAuth issue.
+- The team believes they are on track for the target date of November 15th.","During the standup meeting, the team discussed the 'Alpha Release' project. Liam is encountering problems with OAuth integration but plans to resolve them with Olivia's help. Olivia is making good progress on the UI components and will present a demo soon. The team feels confident they are on track to meet the November 15th target date."
+2. Project info mentioned alongside numerous tasks and complex date and status revisions,"I created a standup meeting transcript involving three team members discussing multiple tasks related to the 'AI Chatbot Upgrade' project. The conversation includes complex date changes and status updates, making it challenging to extract specific project details.","[info] Standup time: 11/05/2024 09:15:00
+
+Alex: Hey team, let's dive into our updates for today. How's everything going with the AI Chatbot Upgrade?
+
+Bella: Well, I've been integrating the new language models, but I'm hitting some snags with the API responses. I was aiming to finish by Wednesday, but it might slip to Thursday or even Friday if these issues persist.
+
+Chris: I've finished the initial UI redesign, but after the client meeting yesterday, they requested additional features. Implementing those might take me until end of day Thursday.
+
+Alex: Understood. Given these updates, do we need to adjust our timeline? We were targeting completion by November 10th.
+
+Bella: Probably. If I need until Friday, that pushes things back. Maybe we should look at November 13th instead?
+
+Chris: Agreed. Also, we're dependent on the backend updates. Tim mentioned that the server migration has been delayed, affecting our deployment schedule.
+
+Alex: Right, I'd forgotten about the server migration. That adds another layer. Let's tentatively move our target date to November 15th to account for all these changes.
+
+Bella: Sounds good. I'll keep pushing to finish earlier if possible.
+
+Chris: Same here. I'll update the project plan to reflect these changes.
+
+Alex: Excellent. Despite the shifts, do we feel we're still on track overall?
+
+Bella: With the new date, yes. Just tight on some tasks.
+
+Chris: Agreed. We'll need to coordinate closely, but it's doable.
+
+Alex: Alright. Let's keep communication lines open and aim to meet the new deadline. Thanks, everyone.",AI Chatbot Upgrade,11/15/2024,At Risk,"- Team is working on the AI Chatbot Upgrade project
+- Integration issues with new language models may delay Bella's tasks to Friday
+- Client requested additional UI features, extending Chris's work to Thursday
+- Server migration delay affects deployment schedule
+- Original target date moved from November 10th to November 15th
+- Team acknowledges tight schedule but feels the new deadline is achievable
+","During the standup on 11/05/2024, the team discussed the AI Chatbot Upgrade project. Bella is facing integration issues with new language models, potentially delaying her work until Friday. Chris needs to implement additional UI features requested by the client, extending his timeline to Thursday. A delayed server migration further impacts the deployment schedule. Consequently, the team agreed to move the project target date from November 10th to November 15th. While acknowledging the tight schedule, the team believes meeting the new deadline is achievable with close coordination."
+2. Project info mentioned alongside numerous tasks and complex date and status revisions,"I created a standup meeting transcript involving four team members discussing progress on the 'Phoenix Project', with numerous tasks and complex date and status revisions mentioned throughout the conversation. The project information is interleaved with the discussion of individual tasks, and the dates and statuses are updated multiple times, making it challenging to extract the key project details.","[info] Standup time: 11/03/2024 09:00:00\n\nAlex: Hey team, let's get started. How's everyone doing on the new mobile app redesign?\n\nJamie: Um, yeah, so I was working on the login screen, but I ran into some issues with the authentication API. I think it might push back my merge to, like, Thursday instead of Wednesday.\n\nTaylor: Right, and I was waiting on that to start integrating the profile settings. Do you think it'll be ready by the end of the week?\n\nJamie: That's the plan, but if I can't get it sorted, it might have to be early next week.\n\nMorgan: Okay, well, that might impact our initial testing phase we planned for the 10th.\n\nAlex: Yeah, we had the testing scheduled for the 10th, which is next Monday. Hmm. If we push that back, our overall timeline for the Phoenix Project might slip.\n\nTaylor: Can't we parallelize some of this? Like, I could start on the profile settings using mocked data?\n\nJamie: Sure, that's a good idea. I'll send you what I have so far.\n\nMorgan: Also, don't forget we have the stakeholder meeting on the 8th, where we need to present our progress. Should we adjust our slides to reflect these changes?\n\nAlex: Probably a good idea. Let's update the slides to show that the login module is still in progress, and the testing phase might start on the 12th instead.\n\nJamie: Got it, I'll handle the slide updates.\n\nTaylor: Cool, and I'll get started with the mocked data.\n\nMorgan: Sounds good. Anything else?\n\nAlex: Just a heads-up, the database migration we've planned for the Phoenix Project is now tentatively scheduled for the 15th, pending the completion of the testing phase.\n\nJamie: Oh, that's later than we initially thought, right?\n\nAlex: Yeah, we had originally planned for the 12th, but given the delays, we need to adjust.\n\nMorgan: Okay, I'll make a note of that.",Phoenix Project,Not Found,At Risk,"- Jamie is facing issues with the authentication API, delaying the login screen merge from Wednesday to Thursday or later.\n- Taylor will start integrating profile settings using mocked data.\n- The initial testing phase, originally scheduled for the 10th, may be pushed to the 12th.\n- The stakeholder meeting is on the 8th; slides need to be updated to reflect progress and changes.\n- The database migration for the Phoenix Project is rescheduled from the 12th to the 15th.\n- The Phoenix Project's overall timeline may slip due to delays.","During the standup meeting on November 3, 2024, the team discussed delays in the Phoenix Project. Jamie is experiencing issues with the authentication API, which may delay the login screen merge and affect Taylor's integration of the profile settings. The testing phase may be postponed from the 10th to the 12th, and the database migration is rescheduled from the 12th to the 15th. They plan to update stakeholder presentation slides for the meeting on the 8th to reflect these changes. The team recognizes that the overall timeline for the Phoenix Project might slip due to these delays."
+2. Project info mentioned alongside numerous tasks and complex date and status revisions,"To create a challenging test case, I will write a standup meeting transcript involving at least three people and eight exchanges. The conversation will include discussions about multiple tasks and will involve complex date and status revisions for the project information. The project name, target date, and status will be mentioned but interleaved with other tasks. The conversation will include casual language with speech fillers like 'uh', 'like', and 'um' to mimic natural speech.","[info] Standup time: 11/15/2024 09:05:00
+
+Alex: Hey everyone, let's kick off. Any blockers or updates?
+
+Maria: Uh, yeah, so about the authentication module, I'm, like, running into some issues. I thought I'd be done by the 21st, but honestly, it's looking more like the 25th now.
+
+Sam: Oh no, that's gonna affect our integration with ""Project Phoenix"" which was supposed to happen on the 24th, right?
+
+Alex: Actually, I think we set the target date for ""Project Phoenix"" integration to the 27th, didn't we?
+
+Maria: Hmm, I had the 24th in my notes, but maybe I misheard.
+
+Sam: I think we did push it to the 27th last week.
+
+Alex: Well, either way, if Maria needs until the 25th, that gives us only two days to integrate and test.
+
+Maria: Yeah, I don't think that's enough time. Maybe we need to consider moving the target date to the 30th.
+
+Sam: But isn't the client expecting delivery by the 30th?
+
+Alex: Yes, they are. Pushing past the 30th isn't an option.
+
+Maria: Then we're kinda at risk of missing the deadline for ""Project Phoenix"".
+
+Alex: Agreed. So, status is now at risk.
+
+Sam: Maybe if we all pitch in, we can get back on track.
+
+Maria: That would help. Also, the API team said they can assist.
+
+Alex: Okay, let's plan on that. Anything else?
+
+Sam: Just a heads up, the database migration is, um, finally complete.
+
+Maria: Oh, awesome.
+
+Alex: Alright, let's regroup tomorrow to check progress.",Project Phoenix,11/30/2024,At Risk,"- Maria is facing issues with the authentication module, delaying completion from the 21st to the 25th.
+- This delay affects the integration of Project Phoenix, which was expected on the 24th or 27th.
+- There's confusion about the integration date, possibly due to previous changes.
+- The team considers moving the target date to the 30th but recognizes the client expects delivery by then.
+- Project Phoenix is now at risk of missing the deadline.
+- The team plans to have everyone help to get back on track.
+- The API team has offered assistance.
+- Database migration is completed.","During the standup meeting on 11/15/2024, Maria reported delays with the authentication module, pushing completion from the 21st to the 25th. This impacts the integration of Project Phoenix, initially planned for the 24th or 27th. The team realizes that with the new delays, they might not meet the client's delivery date of 11/30/2024, putting Project Phoenix at risk. To mitigate this, they decide to have everyone pitch in and accept assistance from the API team. Additionally, Sam reports that the database migration is complete."
+3. (Negative) project name not mentioned at all,"To create a test case where the project name is not mentioned at all, I constructed a meeting transcript involving at least 3 people (Alex, Taylor, and Jordan) with over 8 interactions. The conversation focuses on tasks, progress, and blockers without specifying the project name. The participants discuss issues with API responses, coordination with the backend team, and aim to wrap up by the end of the week. The style is casual with typical speech patterns and fillers.","[info] Standup time: 11/05/2024 09:00:00\n\nAlex: Good morning everyone! Let's get started with our updates. How's everything going?\n\nTaylor: Hey Alex, yeah, so I've been working on the new feature, but I'm hitting some issues with the API responses, they're not consistent.\n\nJordan: Oh yeah, I noticed that too. I think the backend team changed something last night.\n\nAlex: Hmm, okay, that's not ideal. Do we have any idea when it'll be fixed?\n\nJordan: I reached out to them, and they said they're looking into it, but no ETA yet.\n\nTaylor: In the meantime, I'm kinda blocked. I can work on some unit tests though.\n\nAlex: Alright, that makes sense. Jordan, could you keep following up with the backend team?\n\nJordan: Sure thing, I'll ping them again after this.\n\nAlex: Great. Also, any updates on the UI tweaks we discussed last week?\n\nTaylor: Oh yeah, I made those changes. Should be in the latest build.\n\nAlex: Awesome. Let's aim to wrap things up by the end of this week. Any other blockers?",Not Found,11/09/2024,At Risk,- Taylor is working on a new feature but facing issues with inconsistent API responses.\n- Jordan is coordinating with the backend team to resolve API issues.\n- Taylor will work on unit tests while blocked.\n- UI tweaks from last week have been implemented.\n- Team aims to wrap up tasks by the end of the week.\n- No other blockers were mentioned.,"During the standup on 11/05/2024, the team discussed progress on current tasks. Taylor is working on a new feature but is blocked due to inconsistent API responses. Jordan is in contact with the backend team to resolve this issue. In the meantime, Taylor will focus on writing unit tests. UI tweaks from last week have been completed and are in the latest build. The team aims to finish all tasks by the end of the week, but due to the API issues, the project may be at risk."
+3. (Negative) project name not mentioned at all,"Create a standup meeting transcript involving at least 3 people where the project name is not mentioned at all. Ensure there are at least 8 back and forths, include casual speech patterns with 'ums' and typical software engineering dialogue. The project target date and status should be discussed without mentioning the project name.","[info] Standup time: 11/05/2024 09:00:00
+
+Alex: Hey everyone, let's get started. Any updates from your side?
+
+Maria: Yeah, so I've been working on the front-end interface, but I'm running into some issues with the new framework integration.
+
+Eli: I've also been struggling a bit with the database migrations. It's taking longer than expected.
+
+Alex: Hmm, that's concerning. Do you think we'll still be able to meet our deadline on November 15th?
+
+Maria: Uhh, to be honest, unless we get some extra hands, it might be tight.
+
+Eli: Agreed. There's also the issue of the API endpoints not being finalized yet.
+
+Alex: Right, we might need to discuss pushing back the release date then. I'll check with management.
+
+Maria: Thanks, Alex. We'll keep pushing forward in the meantime.
+
+Eli: Yeah, we're doing our best, but it's just a lot to cover.
+
+Alex: Understood. Let's sync up later today and see what we can do to unblock these issues.",Not Found,11/15/2024,At Risk,"- Maria is facing issues with front-end integration of the new framework.
+- Eli is experiencing delays with database migrations.
+- API endpoints are not finalized.
+- Team is concerned about meeting the November 15th deadline.
+- Alex will consult management about possibly pushing back the release date.
+- Team agrees to continue working to resolve the issues.","During the standup on 11/05/2024, the team discussed challenges impacting their ability to meet the project deadline on November 15th. Maria is encountering issues with the front-end integration of a new framework, and Eli is facing delays with database migrations. The API endpoints are also not finalized. Alex acknowledged the concerns and will speak with management about possibly extending the release date. The team agreed to keep working to resolve the issues."
+3. (Negative) project name not mentioned at all,"I need to create a standup meeting transcript involving at least 3 people and at least 8 back and forth exchanges, where the project name is not mentioned at all. The participants will discuss progress, issues, and deadlines without mentioning the project name, making it challenging to extract it.","[info] Standup time: 10/15/2024 09:05:00
+
+Alex: Hey team, let's get started. How's everyone doing today?
+
+Jamie: Good morning! I'm making progress on the new feature, but I ran into a few issues with the API.
+
+Taylor: Same here. The integration isn't working as expected.
+
+Alex: Hmm, that's not good. Do we know what's causing the issues?
+
+Jamie: I think it's related to the recent changes in the authentication flow.
+
+Taylor: Yeah, I noticed that too. Maybe we need to update our tokens.
+
+Alex: Alright, let's sync up with the backend team to get this sorted out.
+
+Jamie: Sounds good. Also, I'm aiming to finish my part by the end of the week.
+
+Taylor: Me too. Are we still targeting next Friday for the release?
+
+Alex: Yes, that's the plan. But let's make sure we resolve these blockers first.
+
+Jamie: Definitely. I'll reach out to Sam from backend after this.
+
+Taylor: Great. Anything else we need to discuss?
+
+Alex: Just a reminder that our client demo is scheduled for the 25th.
+
+Jamie: Got it. Let's make sure everything is polished by then.
+",Not Found,10/18/2024,At Risk,"- Team members are facing issues with the API and integration.
+- Issues may be caused by recent changes in the authentication flow.
+- Plan to sync with the backend team to resolve blockers.
+- Aiming to finish tasks by the end of the week.
+- Release is still planned for next Friday (10/18/2024).
+- Client demo scheduled for October 25th.
+- Reminder to polish everything before the demo.","The team discussed progress on the new feature but encountered issues with the API and integration, possibly due to recent changes in the authentication flow. They plan to coordinate with the backend team to resolve these blockers. Despite the issues, they aim to finish their parts by the end of the week and are still targeting the release for next Friday (10/18/2024). A client demo is scheduled for October 25th, and they want to ensure everything is polished by then."
+4. (Negative) transcript is unrelated to engineering standup,"I created a casual conversation among friends planning a camping trip, which is unrelated to an engineering standup meeting. The dialogue includes at least 8 exchanges among 3 people, with casual speech and fillers like 'um' and 'you know'. This makes the input unsuitable for extracting software engineering project details.","[info] Meeting time: 10/15/2024 18:30:00
+
+Emma: Hey guys! So, um, are we still on for the camping trip this weekend?
+
+Liam: Yeah, absolutely! I just need to, you know, finish packing.
+
+Olivia: Same here. Do we have everything? Tents, sleeping bags, food?
+
+Emma: I think so. I got the tents and the portable stove.
+
+Liam: I can bring the food supplies. Maybe we should make a list?
+
+Olivia: Good idea. Also, what about, uh, the weather? I heard it might rain.
+
+Emma: Oh, really? Hmm, we might need to bring some rain gear then.
+
+Liam: Yeah, let's not forget the raincoats and maybe an extra tarp.
+
+Olivia: Cool. So, meet at Emma's place at 7 am on Saturday?
+
+Emma: Sounds good to me!",Not Found,Not Found,Not Found,Not Found,Not Found
+4. (Negative) transcript is unrelated to engineering standup,"To create this test case, I generated a transcript involving at least 8 exchanges among 3 software engineers discussing a topic unrelated to an engineering standup. They are planning a hiking trip, but they casually use terms like 'deadline', 'launch', 'sprint', and 'debug' which are common in engineering contexts. This may confuse the parser into thinking it's a standup meeting, but it's actually not.","[info] Standup time: 10/15/2024 10:00:00
+
+Alice: Hey guys, are we still on for the hiking trip this weekend?
+
+Bob: Yeah, but we need to finalize the plans. The weather forecast looks good.
+
+Charlie: Um, do we have a deadline to book the cabin?
+
+Alice: Actually, I booked it last night. Thought I'd get ahead of any, like, last-minute rush.
+
+Bob: Awesome! So we're all set then?
+
+Charlie: Wait, what time are we launching on Saturday?
+
+Alice: I was thinking we could start the trek at 7 AM.
+
+Bob: Sounds like an early sprint, but I'm in.
+
+Charlie: Yeah, might need some coffee to debug my system that early.
+
+Alice: Haha, don't worry, we'll have plenty of caffeine.",Not Found,Not Found,Not Found,Not Found,Not Found
+4. (Negative) transcript is unrelated to engineering standup,"To create a negative test case where the transcript is unrelated to engineering standup, I will create a casual conversation between at least three people discussing their weekend plans. The transcript will have at least 8 back and forths, include filler words like 'um' and 'yeah', and maintain a casual tone similar to the example. Since the conversation is not about an engineering standup, the output columns for project details will be 'Not Found'.","[info] Meeting time: 10/05/2024 17:45:00
+
+Alex: Hey guys, um, what are we doing this weekend?
+Jordan: I was thinking maybe we could go hiking? The weather's supposed to be great.
+Taylor: Yeah, that sounds awesome! But didn't we plan to check out that new movie too?
+Alex: Oh right, totally forgot about that. Maybe we can do the movie after the hike?
+Jordan: Um, we might be too tired after hiking, don't you think?
+Taylor: Yeah, maybe we should pick one. Personally, I'm more into the hike.
+Alex: Yeah, fresh air sounds good. Let's go with the hike then.
+Jordan: Cool! I'll bring some snacks. Let's meet at, uh, 9 AM on Saturday?
+Taylor: Perfect! See you then.",Not Found,Not Found,Not Found,"- Friends discuss plans for the weekend.
+- Suggestion to go hiking due to good weather.
+- Considering watching a new movie as well.
+- Decide to go hiking over watching a movie.
+- Plan to meet at 9 AM on Saturday.
+- One friend will bring snacks.","A group of friends plan their weekend activities. They consider both hiking and watching a new movie. Due to the favorable weather, they decide to go hiking instead. They agree to meet at 9 AM on Saturday, and one friend volunteers to bring snacks."
+5. Long transcript with lots of irrelevant information,"I will create a long standup meeting transcript involving at least 3 people, with over 8 exchanges, including lots of irrelevant information to make it more challenging to extract the key details. The transcript will include casual language, filler words, and off-topic discussions to mimic a real-world scenario where the important information is mixed with irrelevant chatter.","[info] Standup time: 11/01/2024 09:15:00
+
+Alex: Hey everyone, sorry I'm a bit late, traffic was terrible this morning. So, let's get started. Any updates on the Feature X?
+
+Jordan: Yeah, no worries. So, um, I was working on the front-end interface, but I hit a snag with the API integration. By the way, did anyone catch the game last night?
+
+Taylor: Oh yeah, that was an amazing match! Can't believe they won in overtime.
+
+Morgan: I missed it, unfortunately. Anyway, regarding Feature X, I completed the database schema, but I'm waiting on the final requirements to be confirmed.
+
+Alex: Great, um, but let's try to stay focused. So Jordan, what's the issue with the API?
+
+Jordan: Right, sorry. So the API endpoints are not returning the expected data. I think there might be a mismatch between the documentation and the implementation.
+
+Taylor: Oh, that reminds me, I need to update the API documentation. I made some changes last week.
+
+Morgan: Speaking of documentation, should we schedule a session to go over the new guidelines?
+
+Alex: Let's table that for now. Taylor, when can you update the documentation?
+
+Taylor: I'll get it done by end of day today.
+
+Jordan: Awesome, that'll help a lot. Also, are we still on track to deliver Feature X by November 15th?
+
+Alex: Given these issues, do you think we'll need to push the date?
+
+Jordan: Ideally not, but if we can't resolve the API issues soon, it might impact the timeline.
+
+Morgan: Maybe we can pull in someone else to help?
+
+Alex: Good idea. Let's coordinate offline. Anything else?
+
+Taylor: Yeah, just a heads up, I'll be out next week for a conference.
+
+Jordan: Oh, where are you going?
+
+Taylor: It's the Tech Innovators Summit in San Francisco.
+
+Alex: Sounds exciting! Okay, let's wrap up. We'll aim to resolve the API issues and keep the November 15th date for Feature X. Thanks, everyone.",Feature X,11/15/2024,At Risk,"- Jordan is facing issues with API integration for the front-end.
+- Taylor needs to update the API documentation by end of day.
+- The API issues may impact the delivery of Feature X by November 15th.
+- Team considers bringing in additional help to resolve the issues.
+- Taylor will be out next week for a conference.","During the standup on 11/01/2024, the team discussed progress on Feature X. Jordan is encountering problems with the API integration, which may affect the project's target delivery date of 11/15/2024. Taylor will update the API documentation by the end of the day to assist. The team acknowledged that the project is at risk and considered bringing in additional help. Taylor also mentioned being out next week for a conference."
+5. Long transcript with lots of irrelevant information,"To create a test case that is a long transcript with lots of irrelevant information, I will compose a standup meeting transcript involving at least three people with over eight exchanges. The conversation will include irrelevant chatter about personal topics like coffee shops, last night's game, and office appliances, alongside the necessary project updates. This will test the model's ability to extract relevant information from a transcript filled with distractions.","[info] Standup time: 10/07/2024 09:05:00
+
+Alex: Hey everyone, sorry I'm a bit late, traffic was crazy this morning.
+
+Blake: No worries, we were just chatting about the new coffee place that opened nearby.
+
+Casey: Yeah, they have the best lattes! We should all go there after work sometime.
+
+Alex: That sounds great! Anyway, let's get started. So, uh, I've been working on the authentication module, but I'm running into some issues with the token refresh logic.
+
+Blake: Oh, I've encountered similar problems before. Maybe we can look into it together later. By the way, did anyone catch the game last night?
+
+Casey: Yes! What a comeback! I can't believe they won in the last minute.
+
+Alex: It was wild! Okay, back to the standup. I'm hoping to resolve the auth issues today and push the updates by end of day.
+
+Blake: Cool. I've been working on the API endpoints, but I'm seeing some unexpected errors. Also, I think the office fridge is broken again.
+
+Casey: Not again! I just put my lunch in there.
+
+Alex: That's unfortunate. We should notify maintenance. So, Blake, do you need any help with those API errors?
+
+Blake: That would be great. Maybe we can pair program after this. Also, I'm thinking we might need to reconsider some UI elements; the colors don't match our branding.
+
+Casey: Speaking of branding, did you hear that marketing is planning a rebranding next quarter?
+
+Alex: Really? That could impact our current design work.
+
+Blake: Exactly. We might need to align with their new guidelines. Oh, and before I forget, there's leftover pizza in the kitchen.
+
+Casey: Sweet! I'll grab some after we're done.
+
+Alex: Alright, let's stay focused. Are we still on track for the release next Friday?
+
+Blake: Given the issues we're facing, I think we might need to push the date.
+
+Casey: I agree. It might be safer to set a new target date.
+
+Alex: Understood. Let's discuss this further after the standup and adjust our timelines accordingly.",Not Found,10/11/2024,At Risk,"- Team is experiencing issues with the authentication module and token refresh logic.
+- API endpoints are returning unexpected errors.
+- UI elements may need changes to match current and upcoming branding.
+- Marketing is planning a rebranding next quarter that could impact design work.
+- Release scheduled for 10/11/2024 is at risk and may need to be postponed.","During the standup on 10/07/2024, the team discussed significant issues with the authentication module and API endpoints. UI elements might require updates to align with current branding, and an upcoming marketing rebranding could further impact design work. Due to these challenges, the release planned for 10/11/2024 is at risk, and the team agreed to consider setting a new target date."
+5. Long transcript with lots of irrelevant information,"I will create a long standup meeting transcript with at least 8 back-and-forth exchanges among at least 3 people. To make it more challenging, I will include irrelevant information such as discussions about traffic, sports, and office amenities. This will make it harder to extract the key project information.","[info] Standup time: 10/15/2024 09:15:00
+
+Alex: Hey guys, let's get started. How's everyone doing?
+
+Beth: Pretty good, had a crazy commute this morning though. Traffic was terrible.
+
+Carlos: Yeah, tell me about it. I got stuck behind a herd of sheep. No kidding.
+
+Alex: Seriously? That's wild. Anyway, let's jump into updates. Um, so the user authentication module is, uh, moving along. We fixed the major bugs, I think.
+
+Dana: Oh hey, before we get into that, did anyone catch the game last night?
+
+Beth: Oh man, that was insane! Can't believe they pulled off that comeback.
+
+Carlos: Yeah, but I still think they need to improve their defense.
+
+Alex: Guys, can we focus? So, as I was saying, we need to get the authentication feature ready before the October 31st deadline.
+
+Beth: Right, right. So on my end, I'm still working on the UI for the dashboard. I hit a snag with the CSS not rendering properly.
+
+Dana: By the way, does anyone know when the coffee machine is getting fixed?
+
+Carlos: I heard maintenance is coming tomorrow.
+
+Alex: Back to the project, folks. Is the dashboard UI going to be ready by next week?
+
+Beth: Yeah, I think so. Once I get past this issue, it should be smooth sailing.
+
+Dana: Oh, and I almost forgot. The API integration is behind schedule because of the third-party vendor delays.
+
+Alex: That's not good. We need that integration done by October 25th to stay on track.
+
+Carlos: I'll reach out to them again and see if we can expedite.
+
+Beth: So, um, are we going to do anything special for Halloween?
+
+Dana: Maybe we can have a costume contest?
+
+Alex: Let's discuss that after. So, to sum up, we're at risk of missing the October 31st deadline unless we resolve these issues quickly.
+
+Carlos: Got it. I'll focus on the API integration.
+
+Beth: And I'll tackle the UI problem today.
+
+Dana: I'll help where I can, maybe with testing.
+
+Alex: Great, let's reconvene tomorrow. Oh, and about that costume contest...
+
+Beth: Yes!
+
+Carlos: I'm dressing up as a bug in the code.
+
+[laughter]",Authentication Feature Update,10/31/2024,At Risk,"- Authentication feature needs to be ready by October 31st; major bugs fixed.
+- Dashboard UI has CSS issues; expected to be resolved soon.
+- API integration is behind due to third-party vendor delays; needs completion by October 25th.
+- Project is at risk of missing the October 31st deadline unless issues are addressed promptly.","The team discussed the progress of the authentication feature, which is scheduled for completion by October 31st. While major bugs have been fixed, there is concern about meeting the deadline. The dashboard UI is experiencing CSS rendering issues, but Beth expects to resolve them soon. The API integration is delayed because of third-party vendor issues, risking the October 25th target. The project is currently at risk, and the team needs to address these problems quickly to meet the deadline."
+6. Bad transcript quality,"To create a transcript with bad quality, I'll include background noise indications, inaudible parts, and misheard words. There will be typos, incomplete sentences, and overlapping speech. Despite the poor quality, the key information about the project should still be discernible.","[info] Standup time: 11/05/2024 09:00:00
+
+Alex: Hey guys, sorry for the delay, traffic was... Anyway, let's get started. Uh, who's first?
+
+Jamie: Um, yeah, so I've been working on the, uh, the data migration but ran into that issue with the, you know, the database locks? So I'm kinda stuck until we can get around that.
+
+Sam: Wait, what issue? Sorry, can you... There was some noise, didn't catch that.
+
+Jamie: The database locks, it's, um, it's causing delays in data migration.
+
+Alex: Oh right, that's been a pain. Did you try the, uh, the workaround that, um, what's-his-name suggested?
+
+Jamie: Yeah, but it didn't really, uh, help. Maybe we need to rethink the approach.
+
+[background noise]
+
+Sam: So when is the, when's the deployment supposed to happen again? The 15th?
+
+Alex: Yeah, uh, November fifteenth, but at this rate, might be hard.
+
+Jamie: Unless we fix this, it's going to be tight.
+
+[inaudible voices]
+
+Alex: Okay, um, so the data migration project is at risk? We need to escalate this.
+
+Sam: Yeah, seems like it.
+
+Alex: Alright, let's regroup later today, see what we can do.",data migration,11/15/2024,At Risk,"• The data migration project is experiencing delays due to database locks.
+• The suggested workaround has not resolved the issue.
+• Deployment is scheduled for 11/15/2024 but is at risk.
+• Team agrees to regroup later to find a solution.","The team discussed issues with the data migration project caused by database locks. The workaround attempted did not help, putting the scheduled deployment on November 15, 2024, at risk. They plan to regroup later today to find a solution."
+6. Bad transcript quality,"To simulate bad transcript quality, I included typos, misheard words, incomplete sentences, and missing words in the transcript. This makes it more challenging to extract the required information. The transcript involves three people and includes more than eight exchanges, using casual language and filler words.","[info] Standup time: 10/15/2024 09:03:00
+
+Alice: Hey guys, let's get startd. Um, I've been working on the, uh, the login feautre, and it's... almost done? But ran into some issues with the, you know, the API intgration.
+
+Bob: Oh, yeah, the API, uh, I think there's an update on that, but I'm not totally sure. Did you check the, um, the latest commit from Dave?
+
+Carol: Wait, which API are we talking about? Is it the user authntication or the data fetch one?
+
+Alice: The auth... um, the user auth one. But the docs are kinda out of date, so it's been tricky.
+
+Bob: Right, right. Uh, so for me, I've been debuggin' the data sync problem, but it's still, uh, not working as expectd.
+
+Carol: Yeah, I had similar issues last week. Maybe, uh, we should, like, have a session to go over the, um, the sync logic?
+
+Bob: Yeah, that'd be great. Also, does anyone know when the deadline for the beta releaz is? I thought it was next Monday?
+
+Alice: I think it was, but, uh, it might've been movd? Not sure though.
+
+Carol: I heard it's been pushed to, um, the 25th? But I could be wrong.
+
+Bob: Okay, we should confirm that. Don't wanna miss the date.
+
+Alice: Yeah, let's check with the PM after this.",Not Found,10/25/2024,At Risk,"- Alice is working on the login feature but facing API integration issues.
+- Bob is debugging the data sync problem which is not working as expected.
+- Carol suggests a session to go over the sync logic.
+- There's confusion about the deadline for the beta release; it might be moved to October 25th.
+- Team decides to confirm the deadline with the PM.","The team discusses ongoing work on the login feature and data synchronization problems. Alice is facing API integration issues with the authentication module, while Bob is debugging the data sync problem. Carol suggests a collaborative session to resolve sync logic issues. There's uncertainty about the beta release deadline, which may have been pushed to October 25th. The team plans to confirm the deadline with the project manager."
+6. Bad transcript quality,"To create a test case with bad transcript quality, I included typos, misspellings, and incomplete words to simulate poor transcription. The dialogue reflects casual speech among software engineers with fillers like 'um' and 'uh'. The transcript includes more than 8 back and forth exchanges among three people, and despite the poor quality, key project details are present.","[info] Standup time: 11/05/2024 09:15:00
+
+Alex: Um, hey guys, lets strt the, uh, standup. So, I've been working on the intergration for the new paymnt gateway, but I ran into some, uh, issues with the API. It's, it's not responing as expexted.
+
+Bella: Wait, sorry, did you say the, the API key is invid? I thought we got the new one last week.
+
+Chris: Yeah, yeah, um, I think we did, but maybe, uh, the documntation didn't update. Or somethin.
+
+Alex: Right, so, I, I think we need to, uh, check with the vnder. Also, the, the deadline is, uh, aproaching on, on Novembr 15th, so we need to hrry.
+
+Bella: Oh, um, about that, I, I think we might need to, uh, push that date. There's still some work on the UI thats pending.
+
+Chris: Yeah, and the testing fase is, uh, not started yet. So, perhaps Novembr 20?
+
+Alex: Hmm, okay, but we should aim to, uh, wrap up by then. The project status is, uh, kinda at risk, I think.
+
+Bella: Agreed, lets, lets coordinate with the team and, uh, see what we can do.
+
+Alex: Alright, that's all from me, any other, uh, updates?
+
+Chris: Nope, that's it.",Not Found,11/20/2024,At Risk,"- Issues with integration of new payment gateway API
+- API not responding as expected
+- Need to check with vendor about API issues
+- Original deadline was November 15th
+- Deadline may need to be pushed to November 20th
+- UI work is still pending
+- Testing phase has not started
+- Project status is at risk","The team discussed problems with integrating the new payment gateway API, which is not responding as expected. They need to check with the vendor to resolve API issues. Due to pending UI work and the testing phase not yet started, the original deadline of November 15th may need to be pushed to November 20th. The project status is at risk, and the team agrees to coordinate efforts to meet the new deadline."

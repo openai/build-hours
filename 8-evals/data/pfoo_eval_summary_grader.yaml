@@ -1,0 +1,349 @@
+prompts:
+- 'Evaluate whether the items in summary_key_points are covered in the summary, both
+  provided in <context> tags. Use a full point (1) for a strong match and a half point
+  (0.5) for a partial match. If there are no points in summary_key_points, then assign
+  a score of 0.0.
+
+
+  <context>
+
+  {{input}}
+
+  </context>
+
+
+  Think step by step and output the final ratio on a new line at the end of the output,
+  formatted like "Fraction: 0.25", with no additional markdown or ``` characters.
+
+  '
+providers:
+- id: openai:gpt-3.5-turbo
+- id: openai:gpt-4o-mini
+- id: openai:gpt-4o-2024-08-06
+- id: openai:o1-mini
+- id: openai:o1-preview
+tests:
+- assert:
+  - metric: frac_key_points_in_summary
+    type: python
+    value: '''1.0'' in output.split(''\n'')[-1]'
+  description: Test if summary is correct
+  vars:
+    input: '<summary_key_points>
+
+      - Version 2.5 release scheduled for January 10th.
+
+      - New user interface design finalized.
+
+      - Security vulnerabilities from audit addressed.
+
+      - Mobile app integration added to the roadmap.
+
+      - Training sessions for the support team planned for December.
+
+      </summary_key_points>
+
+      <summary>
+
+      In the latest software update meeting, the team confirmed that Version 2.5 is
+      scheduled for release on January 10th. The new user interface design has been
+      finalized, promising a better user experience. All security vulnerabilities
+      identified during the recent audit have been addressed. Additionally, mobile
+      app integration has been added to the project roadmap. Training sessions for
+      the support team are planned for December to prepare for the upcoming changes.
+
+      </summary>'
+- assert:
+  - metric: frac_key_points_in_summary
+    type: python
+    value: '''1.0'' in output.split(''\n'')[-1]'
+  description: Test if summary is correct
+  vars:
+    input: '<summary_key_points>
+
+      - Revenue increased by 10% compared to last quarter.
+
+      - Marketing expenses exceeded budget by 5%.
+
+      - New product launch scheduled for next month.
+
+      - Customer satisfaction ratings improved by 15%.
+
+      - Plan to expand into two new markets in Q3.
+
+      </summary_key_points>
+
+      <summary>
+
+      In the meeting held on April 10th, the team reviewed the quarterly financial
+      results. Revenue increased by 10% compared to the previous quarter, although
+      marketing expenses exceeded the budget by 5%. The team was pleased to note that
+      customer satisfaction ratings improved by 15%. They discussed the upcoming new
+      product launch scheduled for next month and plans to expand into two new markets
+      in the third quarter.
+
+      </summary>'
+- assert:
+  - metric: frac_key_points_in_summary
+    type: python
+    value: '''1.0'' in output.split(''\n'')[-1]'
+  description: Test if summary is correct
+  vars:
+    input: '<summary_key_points>
+
+      - Mobile app beta testing extended by one week.
+
+      - Backend API integration completed successfully.
+
+      - Marketing campaign to begin on December 1st.
+
+      - Next sprint planning meeting scheduled for November 20th.
+
+      </summary_key_points>
+
+      <summary>
+
+      During the team meeting on November 15th, it was announced that the mobile app
+      beta testing phase has been extended by one week to ensure quality. The backend
+      API integration was completed successfully, which will enhance app performance.
+      The marketing campaign is scheduled to commence on December 1st. The next sprint
+      planning meeting is set for November 20th to discuss upcoming tasks and goals.
+
+      </summary>'
+- assert:
+  - metric: frac_key_points_in_summary
+    type: python
+    value: '''0.5'' in output.split(''\n'')[-1]'
+  description: Test if summary is correct
+  vars:
+    input: '<summary_key_points>
+
+      - Software Build Version 2.1 failed quality assurance tests.
+
+      - New feature X implementation postponed to next sprint.
+
+      - Team member John is on sick leave for the rest of the week.
+
+      - Client meeting scheduled for Friday rescheduled to next Monday.
+
+      - Budget for Project Alpha increased by 10%.
+
+      </summary_key_points>
+
+      <summary>
+
+      In today''s team meeting, we reviewed the current project statuses. The upcoming
+      client meeting has been rescheduled to next Monday. Additionally, the budget
+      for Project Alpha has been increased by 10%, which will allow us to allocate
+      more resources. Team member John will be on sick leave for the rest of the week,
+      and we wish him a speedy recovery. Overall, the team remains focused on delivering
+      quality results.
+
+      </summary>'
+- assert:
+  - metric: frac_key_points_in_summary
+    type: python
+    value: '''0.4'' in output.split(''\n'')[-1]'
+  description: Test if summary is correct
+  vars:
+    input: '<summary_key_points>
+
+      - The marketing campaign launch date has been moved from December 1st to December
+      5th.
+
+      - The design team completed the new logo.
+
+      - Budget allocation for Q1 has been increased by 10%.
+
+      - The client requested additional features for the mobile app.
+
+      - The next meeting is scheduled for next Monday at 10 AM.
+
+      </summary_key_points>
+
+      <summary>
+
+      At the team meeting on November 10th, the design team announced the completion
+      of the new company logo. The team expressed appreciation for the hard work put
+      into the design. Additionally, it was agreed that the next meeting will be scheduled
+      for next Monday at 10 AM to discuss ongoing projects and address any concerns.
+      The team is encouraged to come prepared with updates on their respective tasks.
+
+      </summary>'
+- assert:
+  - metric: frac_key_points_in_summary
+    type: python
+    value: '''0.4'' in output.split(''\n'')[-1]'
+  description: Test if summary is correct
+  vars:
+    input: '<summary_key_points>
+
+      - Backend API integration delayed due to authentication issues.
+
+      - UI design changes need approval from the client.
+
+      - Marketing campaign launch moved from December 1st to December 5th.
+
+      - New team member joining next week.
+
+      - Budget increased by 10% to accommodate additional resources.
+
+      </summary_key_points>
+
+      <summary>
+
+      In today''s project meeting, we discussed the delay in integrating the backend
+      API, which is facing authentication issues. The team is working on resolving
+      these as a priority. Additionally, the marketing campaign launch has been rescheduled
+      to December 5th to align with the updated development timeline. We are focusing
+      on these critical tasks to ensure project success.
+
+      </summary>'
+- assert:
+  - metric: frac_key_points_in_summary
+    type: python
+    value: '''0.0'' in output.split(''\n'')[-1]'
+  description: Test if summary is correct
+  vars:
+    input: '<summary_key_points>
+
+      </summary_key_points>
+
+      <summary>
+
+      In the team meeting on August 12th, the progress of the Beta project was discussed.
+      The development team reported that the UI redesign is on track for completion
+      by the end of the week. However, testing has uncovered several critical bugs
+      that need immediate attention. The team agreed to prioritize bug fixes over
+      new feature development for the next sprint. The release date remains unchanged,
+      but the situation requires close monitoring.
+
+      </summary>'
+- assert:
+  - metric: frac_key_points_in_summary
+    type: python
+    value: '''0.0'' in output.split(''\n'')[-1]'
+  description: Test if summary is correct
+  vars:
+    input: '<summary_key_points>
+
+      </summary_key_points>
+
+      <summary>
+
+      During the team meeting on September 14th, several issues were discussed regarding
+      the Beta project. The development team reported progress on the new features
+      but identified several bugs that need to be resolved before the next release.
+      The testing team is working diligently to ensure all features are thoroughly
+      tested. The project manager emphasized the importance of meeting the upcoming
+      deadline and encouraged collaboration between teams.
+
+      </summary>'
+- assert:
+  - metric: frac_key_points_in_summary
+    type: python
+    value: '''0.0'' in output.split(''\n'')[-1]'
+  description: Test if summary is correct
+  vars:
+    input: '<summary_key_points>
+
+      </summary_key_points>
+
+      <summary>
+
+      During the project update meeting on December 1st, the team reviewed the progress
+      of the Delta rollout. The API development has been completed ahead of schedule,
+      allowing for early integration testing. Marketing materials are in the final
+      stages of approval and will be released next week. The team also discussed potential
+      risks associated with third-party dependencies but agreed on mitigation strategies.
+      Overall, the project is on track for the planned release date of December 15th.
+
+      </summary>'
+- assert:
+  - metric: frac_key_points_in_summary
+    type: python
+    value: '''0.875'' in output.split(''\n'')[-1]'
+  description: Test if summary is correct
+  vars:
+    input: '<summary_key_points>
+
+      - The client requested additional features for the mobile app.
+
+      - The backend team reported delays due to unexpected bugs.
+
+      - The marketing campaign is set to launch next Monday.
+
+      - Budget constraints may affect the Q2 development plans.
+
+      </summary_key_points>
+
+      <summary>
+
+      In today''s team meeting, we discussed recent client feedback and project challenges.
+      Concerns about our delivery schedule have arisen due to technical issues encountered.
+      Additionally, preparations for upcoming promotional activities are progressing,
+      targeting an early next week launch. Financial limitations were also highlighted
+      as influencing our future planning.
+
+      </summary>'
+- assert:
+  - metric: frac_key_points_in_summary
+    type: python
+    value: '''0.6'' in output.split(''\n'')[-1]'
+  description: Test if summary is correct
+  vars:
+    input: '<summary_key_points>
+
+      - CEO plans to retire at the end of the year.
+
+      - New product line launch scheduled for Q2 next year.
+
+      - Marketing budget increased by 20% for next quarter.
+
+      - Remote work policy extended indefinitely.
+
+      - Company facing a lawsuit over patent infringement.
+
+      </summary_key_points>
+
+      <summary>
+
+      In the recent board meeting, several significant announcements were made impacting
+      the company''s future. Leadership changes are on the horizon as top executives
+      consider their long-term roles. The introduction of innovative offerings is
+      planned for mid-next year, aligning with the company''s growth strategy. Investment
+      in promotional activities will see a noticeable increase, reflecting the importance
+      of market presence. The organizational policies continue to adapt to the evolving
+      work environment. Legal challenges present new obstacles that the company is
+      preparing to address proactively.
+
+      </summary>'
+- assert:
+  - metric: frac_key_points_in_summary
+    type: python
+    value: '''0.5'' in output.split(''\n'')[-1]'
+  description: Test if summary is correct
+  vars:
+    input: '<summary_key_points>
+
+      - Quarterly sales increased by 5% compared to last quarter.
+
+      - Marketing campaign extended by two weeks due to positive feedback.
+
+      - Budget for R&D increased by $500,000.
+
+      - New office in San Francisco delayed due to permit issues.
+
+      </summary_key_points>
+
+      <summary>
+
+      During the quarterly meeting, the team discussed recent performance metrics.
+      Sales have improved compared to the previous quarter, indicating a positive
+      trend. Given the favorable response, the marketing efforts will be prolonged
+      to capitalize on this momentum. There have been adjustments in the budget allocations,
+      particularly enhancing support for research and development initiatives. Meanwhile,
+      the planned opening of the new office location is facing delays owing to certain
+      logistical challenges.
+
+      </summary>'

@@ -1,0 +1,103 @@
+new_input_case,rationale,input,key_points_total,key_points_present_in_summary,ratio_points_in_summary_vs_key_points_total
+"1. 3-6 key points, accurately captured in summary",I will generate 5 key points about a software update meeting and write a summary that includes all these key points accurately.,"<summary_key_points>
+- Version 2.5 release scheduled for January 10th.
+- New user interface design finalized.
+- Security vulnerabilities from audit addressed.
+- Mobile app integration added to the roadmap.
+- Training sessions for the support team planned for December.
+</summary_key_points>
+<summary>
+In the latest software update meeting, the team confirmed that Version 2.5 is scheduled for release on January 10th. The new user interface design has been finalized, promising a better user experience. All security vulnerabilities identified during the recent audit have been addressed. Additionally, mobile app integration has been added to the project roadmap. Training sessions for the support team are planned for December to prepare for the upcoming changes.
+</summary>",5,5,1
+"1. 3-6 key points, accurately captured in summary",I will create 5 key points about a team's discussion on quarterly financial results and future plans. The summary will accurately capture all key points.,"<summary_key_points>
+- Revenue increased by 10% compared to last quarter.
+- Marketing expenses exceeded budget by 5%.
+- New product launch scheduled for next month.
+- Customer satisfaction ratings improved by 15%.
+- Plan to expand into two new markets in Q3.
+</summary_key_points>
+<summary>
+In the meeting held on April 10th, the team reviewed the quarterly financial results. Revenue increased by 10% compared to the previous quarter, although marketing expenses exceeded the budget by 5%. The team was pleased to note that customer satisfaction ratings improved by 15%. They discussed the upcoming new product launch scheduled for next month and plans to expand into two new markets in the third quarter.
+</summary>",5,5,1
+"1. 3-6 key points, accurately captured in summary","To create this test case, I generated 4 key points related to a project update meeting, ensuring that all key points are accurately captured in the summary. The summary mirrors the tone and formatting of the example.","<summary_key_points>
+- Mobile app beta testing extended by one week.
+- Backend API integration completed successfully.
+- Marketing campaign to begin on December 1st.
+- Next sprint planning meeting scheduled for November 20th.
+</summary_key_points>
+<summary>
+During the team meeting on November 15th, it was announced that the mobile app beta testing phase has been extended by one week to ensure quality. The backend API integration was completed successfully, which will enhance app performance. The marketing campaign is scheduled to commence on December 1st. The next sprint planning meeting is set for November 20th to discuss upcoming tasks and goals.
+</summary>",4,4,1
+2. Summary misses some or all key points,"To create a test case where the summary misses some of the key points, I will generate a set of five key points. In the summary, I will include only three of these key points and omit two. This will test the grader's ability to accurately identify which key points are present in the summary.","<summary_key_points>
+- Software Build Version 2.1 failed quality assurance tests.
+- New feature X implementation postponed to next sprint.
+- Team member John is on sick leave for the rest of the week.
+- Client meeting scheduled for Friday rescheduled to next Monday.
+- Budget for Project Alpha increased by 10%.
+</summary_key_points>
+<summary>
+In today's team meeting, we reviewed the current project statuses. The upcoming client meeting has been rescheduled to next Monday. Additionally, the budget for Project Alpha has been increased by 10%, which will allow us to allocate more resources. Team member John will be on sick leave for the rest of the week, and we wish him a speedy recovery. Overall, the team remains focused on delivering quality results.
+</summary>",5,3,0.5
+2. Summary misses some or all key points,"To create a test case where the summary misses some key points, I provided five key points, but wrote a summary that only includes two of them, omitting the other three. This tests the grader's ability to identify missing key points in the summary.","<summary_key_points>
+- The marketing campaign launch date has been moved from December 1st to December 5th.
+- The design team completed the new logo.
+- Budget allocation for Q1 has been increased by 10%.
+- The client requested additional features for the mobile app.
+- The next meeting is scheduled for next Monday at 10 AM.
+</summary_key_points>
+<summary>
+At the team meeting on November 10th, the design team announced the completion of the new company logo. The team expressed appreciation for the hard work put into the design. Additionally, it was agreed that the next meeting will be scheduled for next Monday at 10 AM to discuss ongoing projects and address any concerns. The team is encouraged to come prepared with updates on their respective tasks.
+</summary>",5,2,0.4
+2. Summary misses some or all key points,"I will create a set of key points from a project meeting, and then write a summary that omits some of these key points to adhere to the requirement.","<summary_key_points>
+- Backend API integration delayed due to authentication issues.
+- UI design changes need approval from the client.
+- Marketing campaign launch moved from December 1st to December 5th.
+- New team member joining next week.
+- Budget increased by 10% to accommodate additional resources.
+</summary_key_points>
+<summary>
+In today's project meeting, we discussed the delay in integrating the backend API, which is facing authentication issues. The team is working on resolving these as a priority. Additionally, the marketing campaign launch has been rescheduled to December 5th to align with the updated development timeline. We are focusing on these critical tasks to ensure project success.
+</summary>",5,2,0.4
+"3. 0 items in summary_key_points, but summary present","I will create a test case where the <summary_key_points> section is empty, but a detailed <summary> is provided. This will test the grader's ability to handle cases with no key points and ensure it correctly calculates the ratio when there are zero key points.","<summary_key_points>
+</summary_key_points>
+<summary>
+In the team meeting on August 12th, the progress of the Beta project was discussed. The development team reported that the UI redesign is on track for completion by the end of the week. However, testing has uncovered several critical bugs that need immediate attention. The team agreed to prioritize bug fixes over new feature development for the next sprint. The release date remains unchanged, but the situation requires close monitoring.
+</summary>",0,0,0
+"3. 0 items in summary_key_points, but summary present","Since the new_input_case requires 0 items in summary_key_points but a summary present, I created an input where the summary_key_points section is empty, and the summary contains content similar in style and length to the example input.","<summary_key_points>
+</summary_key_points>
+<summary>
+During the team meeting on September 14th, several issues were discussed regarding the Beta project. The development team reported progress on the new features but identified several bugs that need to be resolved before the next release. The testing team is working diligently to ensure all features are thoroughly tested. The project manager emphasized the importance of meeting the upcoming deadline and encouraged collaboration between teams.
+</summary>",0,0,0
+"3. 0 items in summary_key_points, but summary present","Since the new input case requires 0 items in summary_key_points but a summary present, I will create an input where the <summary_key_points> section is empty, but the <summary> contains a summary similar in length, tone, and formatting to the example input.","<summary_key_points>
+</summary_key_points>
+<summary>
+During the project update meeting on December 1st, the team reviewed the progress of the Delta rollout. The API development has been completed ahead of schedule, allowing for early integration testing. Marketing materials are in the final stages of approval and will be released next week. The team also discussed potential risks associated with third-party dependencies but agreed on mitigation strategies. Overall, the project is on track for the planned release date of December 15th.
+</summary>",0,0,0
+"4. 3-6 items in summary_key_points, with ambiguous or borderline inclusion in the summary","I created 4 key points where some are ambiguously referenced in the summary. The summary mentions client feedback and technical issues in general terms, making it unclear if specific key points are fully included. This tests the grader's ability to handle borderline cases.","<summary_key_points>
+- The client requested additional features for the mobile app.
+- The backend team reported delays due to unexpected bugs.
+- The marketing campaign is set to launch next Monday.
+- Budget constraints may affect the Q2 development plans.
+</summary_key_points>
+<summary>
+In today's team meeting, we discussed recent client feedback and project challenges. Concerns about our delivery schedule have arisen due to technical issues encountered. Additionally, preparations for upcoming promotional activities are progressing, targeting an early next week launch. Financial limitations were also highlighted as influencing our future planning.
+</summary>",4,2.5,0.875
+"4. 3-6 items in summary_key_points, with ambiguous or borderline inclusion in the summary","To create a test case with ambiguous or borderline inclusion, I listed five key points that are indirectly or vaguely referenced in the summary. The summary mentions these points without specific details, making it challenging to ascertain whether they are fully included. This mirrors the example input's format and adheres to the requirement of ambiguous inclusion.","<summary_key_points>
+- CEO plans to retire at the end of the year.
+- New product line launch scheduled for Q2 next year.
+- Marketing budget increased by 20% for next quarter.
+- Remote work policy extended indefinitely.
+- Company facing a lawsuit over patent infringement.
+</summary_key_points>
+<summary>
+In the recent board meeting, several significant announcements were made impacting the company's future. Leadership changes are on the horizon as top executives consider their long-term roles. The introduction of innovative offerings is planned for mid-next year, aligning with the company's growth strategy. Investment in promotional activities will see a noticeable increase, reflecting the importance of market presence. The organizational policies continue to adapt to the evolving work environment. Legal challenges present new obstacles that the company is preparing to address proactively.
+</summary>",5,2,0.6
+"4. 3-6 items in summary_key_points, with ambiguous or borderline inclusion in the summary","To create ambiguity, I will include 4 key points where their inclusion in the summary is not explicit. The summary will mention the key points in vague terms, making it challenging to determine if the key points are truly present.","<summary_key_points>
+- Quarterly sales increased by 5% compared to last quarter.
+- Marketing campaign extended by two weeks due to positive feedback.
+- Budget for R&D increased by $500,000.
+- New office in San Francisco delayed due to permit issues.
+</summary_key_points>
+<summary>
+During the quarterly meeting, the team discussed recent performance metrics. Sales have improved compared to the previous quarter, indicating a positive trend. Given the favorable response, the marketing efforts will be prolonged to capitalize on this momentum. There have been adjustments in the budget allocations, particularly enhancing support for research and development initiatives. Meanwhile, the planned opening of the new office location is facing delays owing to certain logistical challenges.
+</summary>",4,3,0.5

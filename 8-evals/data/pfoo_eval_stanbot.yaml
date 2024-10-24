@@ -1,0 +1,2354 @@
+prompts:
+- 'Consider this transcript and extract the following information.
+
+
+  # Transcript:
+
+  {{context}}
+
+  '
+- "You are an expert at correctly extracting information from meeting transcripts.\
+  \ Please consider the provided transcript and context and extract the relevant information\
+  \ provided in the schema.\n    # Additional Rules\n    \n    ## Project Status\n\
+  \    - Look for explicit mention of project status, but if everything is proceeding\
+  \ as expected it's okay to assume that a project is \"On Track\"\n    - Definitions\n\
+  \        - Complete: The project has been completed. Note that just because tasks\
+  \ within the project are mentioned to be complete, that doesn't necessarily indicate\
+  \ the whole project is complete. If a project still needs to roll out, that means\
+  \ it isn't complete. It must be said explicitly that a project is complete.\n  \
+  \      - On Track: This means that things are going well and the project is likely\
+  \ going to land on the planned date. Includes language like \"on track\" or \"looking\
+  \ good to ship\".\n        - At Risk: It's unlikely the project will be delivered\
+  \ on the planned date.\n            - Includes language like \"delayed\" or \"taking\
+  \ longer than expected\" or \"need more resourcing\".\n            - If there are\
+  \ any blockers, especially ones without a clear path to quick resolution, then the\
+  \ project should be At Risk.\n            - If the team is discussing pulling in\
+  \ more personnell to help, the project should be At Risk.\n    \n    ## Project\
+  \ Target Date\n    - Look for explicit information about when a project is scheduled\
+  \ to ship. Even if the date is at risk, it's important to extract any mentioned\
+  \ dates for when the project was planned to launch.\n    - If the target ship date\
+  \ was changed in the standup, return the original start date.\n    - Do not include\
+  \ information about task ship dates.\n    - Example1:\n        - Input: \"Our initial\
+  \ target was to complete by November 5th 2024... However, due to the recent changes,\
+  \ let's tentatively adjust our target date to November 8th.\"\n        - Output:\
+  \ 11/05/2024\n    \n    ## Project Name\n    - The name of the project or initiative.\
+  \ Can refer to any large product launch, initiative, or feature that people are\
+  \ working on in the standup.\n    - Any individual feature or task name within a\
+  \ project is not the project name\n    - It's okay if it's broad, like \"product\
+  \ launch\", but it can't be something purely operational like \"Latest Deployment\"\
+  .\n    - Example1\n        - Input: \"We're working on the Mars Project\"\n    \
+  \    - Project Name: \"Mars Project\"\n    - Example2:\n        Input: \"I've been\
+  \ developing the new feature, but I'm encountering some problems\"\n        Output:\
+  \ \"Not Found\"\n    - Example2:\n        Input: \"I've been handling the front-end\
+  \ interface\"\n        Output: \"Not Found\"\n        \n    # Summary Details\n\
+  \    - It's not necessary to repeat project name, date, or status as that will be\
+  \ displayed with the summary\n    - Summarize important tasks and progress, especially\
+  \ when blocked\n    - Call out any key decisions, points of confusion, or action\
+  \ items that come up on the call.\n    \n    # Transcript:\n    {{context}}\n  \
+  \  "
+providers:
+- config:
+    response_format:
+      json_schema:
+        name: standup_notes_object
+        schema:
+          additionalProperties: false
+          properties:
+            project_name:
+              description: The name of the project, in Title Case. Exclude the word
+                'Project' from project names. If none, output 'Not Found'.
+              type: string
+            project_status:
+              description: The current status of the property or item, such as active,
+                inactive or pending
+              enum:
+              - Complete
+              - On Track
+              - At Risk
+              - Not Found
+              type: string
+            project_target_date:
+              description: The proposed release date of the project, if available.
+                Please infer the date if possible. Format is mm/dd/yyyy. Otherwise
+                'Not Found'
+              type: string
+            reasoning:
+              description: Analyze the context and think step by step about what the
+                correct values are for each field.
+              type: string
+            summary:
+              description: A few sentences summarizing the key points from the transcript.
+              type: string
+          required:
+          - reasoning
+          - project_name
+          - project_target_date
+          - project_status
+          - summary
+          type: object
+        strict: true
+      type: json_schema
+  id: openai:gpt-4o-2024-08-06
+tests:
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'apollo'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == '10/30/2024'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'at risk'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 1. Project name mentioned clearly
+    context: '[info] Standup time: 10/03/2024 09:15:00
+
+
+      Alice: Hey team! Let''s kick off with our updates. Remember, we''re focusing
+      on the Apollo Project this week.
+
+
+      Bob: Sure thing, Alice. So, um, I''ve been working on the user authentication
+      module for the Apollo Project. I hit a snag with the OAuth implementation, but
+      I think I can resolve it by tomorrow.
+
+
+      Charlie: I''ve been setting up the database schemas for Apollo. Got most of
+      it done, but I need to sync with you, Bob, about the user data requirements.
+
+
+      Bob: Yeah, let''s catch up after this. Also, are we still aiming to complete
+      the Apollo Project by October 30th?
+
+
+      Alice: Yes, the target date is still October 30th. But let me know if there
+      are any blockers.
+
+
+      Charlie: Well, there is one issue. The API endpoints from the backend team aren''t
+      ready yet, so we''re a bit, uh, blocked on that.
+
+
+      Bob: Yeah, same here. Without those endpoints, testing is kinda tough.
+
+
+      Alice: Understood. I''ll escalate this. Overall, how do you feel about the Apollo
+      Project status?
+
+
+      Bob: I''d say it''s at risk unless we get the endpoints soon.
+
+
+      Charlie: Agreed.
+
+
+      Alice: Okay, I''ll see what I can do. Thanks, everyone.'
+    summary_key_points: '- Bob is working on user authentication but has issues with
+      OAuth implementation.
+
+      - Charlie is working on database schemas and needs to sync with Bob.
+
+      - Both Bob and Charlie are blocked due to backend API endpoints not being ready.
+
+      - Alice will escalate the issue regarding backend API endpoints.'
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'phoenix'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == '11/20/2024'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'on track'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 1. Project name mentioned clearly
+    context: '[info] Standup time: 11/15/2024 09:15:00
+
+
+      Emily: Hey team, let''s kick off the standup. How''s everyone doing on Project
+      Phoenix?
+
+
+      Raj: Hey Emily, um, I''m kind of stuck on integrating the new authentication
+      module. It''s giving me some weird errors.
+
+
+      Lisa: Yeah, Raj, I ran into similar issues last week. Did you try updating to
+      the latest API version?
+
+
+      Raj: Oh, I didn''t think of that. I''ll give it a shot, thanks!
+
+
+      Emily: Great collaboration! So, Lisa, any updates on the UI components?
+
+
+      Lisa: Yeah, the main dashboard is like, almost done. Just need to polish a few
+      things. Should have it wrapped up by tomorrow.
+
+
+      Emily: Awesome. Our target date is still November 20th. Do you guys think we''re
+      on track?
+
+
+      Raj: Well, if I can fix this auth issue today, I think we''ll be good.
+
+
+      Lisa: Yeah, I don''t see any major blockers on my side.
+
+
+      Emily: Perfect. Let''s aim to have everything ready for the client review on
+      the 20th.'
+    summary_key_points: '- The team is working on Project Phoenix, with a target date
+      of 11/20/2024.
+
+      - Raj is experiencing issues integrating the new authentication module but will
+      try updating the API version.
+
+      - Lisa has nearly completed the main dashboard UI components; expects to finish
+      by tomorrow.
+
+      - The team believes they are on track for the client review on November 20th.'
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'alpha release'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == '11/15/2024'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'on track'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 1. Project name mentioned clearly
+    context: '[info] Standup time: 11/02/2024 09:00:00
+
+
+      Emma: Hey team, let''s get started. So, regarding the ''Alpha Release'' project,
+      how''s everything progressing?
+
+
+      Liam: Um, yeah, I''ve been working on the authentication module, and I hit a
+      snag with the OAuth integration. Hoping to resolve it by today.
+
+
+      Olivia: The UI components for the dashboard are coming together. I should have
+      a demo ready by tomorrow.
+
+
+      Emma: Great to hear. Liam, do you need any help with the OAuth stuff?
+
+
+      Liam: Actually, Olivia, if you have some time later, maybe we can pair program
+      and figure it out?
+
+
+      Olivia: Yeah, sure thing. Ping me after lunch.
+
+
+      Emma: Awesome. Our target date for the Alpha Release is still set for November
+      15th. Do you guys think we''re on track?
+
+
+      Liam: If I can get past this OAuth hurdle, I think we should be good.
+
+
+      Olivia: From my side, it''s looking on track.
+
+
+      Emma: Perfect. Let''s push through and make sure we''re ready for the Alpha
+      Release on the 15th.'
+    summary_key_points: '- Liam is facing issues with OAuth integration in the authentication
+      module.
+
+      - Olivia is progressing well on the UI components and will have a demo ready
+      tomorrow.
+
+      - Liam and Olivia will collaborate to resolve the OAuth issue.'
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'ai chatbot upgrade'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == '11/10/2024'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'at risk'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 2. Project info mentioned alongside numerous tasks and complex date and
+      status revisions
+    context: '[info] Standup time: 11/05/2024 09:15:00
+
+
+      Alex: Hey team, let''s dive into our updates for today. How''s everything going
+      with the AI Chatbot Upgrade?
+
+
+      Bella: Well, I''ve been integrating the new language models, but I''m hitting
+      some snags with the API responses. I was aiming to finish by Wednesday, but
+      it might slip to Thursday or even Friday if these issues persist.
+
+
+      Chris: I''ve finished the initial UI redesign, but after the client meeting
+      yesterday, they requested additional features. Implementing those might take
+      me until end of day Thursday.
+
+
+      Alex: Understood. Given these updates, do we need to adjust our timeline? We
+      were targeting completion by November 10th.
+
+
+      Bella: Probably. If I need until Friday, that pushes things back. Maybe we should
+      look at November 13th instead?
+
+
+      Chris: Agreed. Also, we''re dependent on the backend updates. Tim mentioned
+      that the server migration has been delayed, affecting our deployment schedule.
+
+
+      Alex: Right, I''d forgotten about the server migration. That adds another layer.
+      Let''s tentatively move our target date to November 15th to account for all
+      these changes.
+
+
+      Bella: Sounds good. I''ll keep pushing to finish earlier if possible.
+
+
+      Chris: Same here. I''ll update the project plan to reflect these changes.
+
+
+      Alex: Excellent. Despite the shifts, do we feel we''re still on track overall?
+
+
+      Bella: With the new date, yes. Just tight on some tasks.
+
+
+      Chris: Agreed. We''ll need to coordinate closely, but it''s doable.
+
+
+      Alex: Alright. Let''s keep communication lines open and aim to meet the new
+      deadline. Thanks, everyone.'
+    summary_key_points: '- The client requested additional UI features, extending
+      Chris''s work to Thursday
+
+      - Integration issues with new language models may delay Bella''s tasks to Friday
+
+      - Server migration delay also contributing to pushing back the target date
+
+      - Target date moved from November 10th to November 15th
+
+      - Team acknowledges tight schedule but feels the new deadline is achievable'
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'phoenix project'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == 'not found'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'at risk'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 2. Project info mentioned alongside numerous tasks and complex date and
+      status revisions
+    context: '[info] Standup time: 11/03/2024 09:00:00
+
+
+      Alex: Hey team, let''s get started. How''s everyone doing on the new mobile
+      app redesign?
+
+
+      Jamie: Um, yeah, so I was working on the login screen, but I ran into some issues
+      with the authentication API. I think it might push back my merge to, like, Thursday
+      instead of Wednesday.
+
+
+      Taylor: Right, and I was waiting on that to start integrating the profile settings.
+      Do you think it''ll be ready by the end of the week?
+
+
+      Jamie: That''s the plan, but if I can''t get it sorted, it might have to be
+      early next week.
+
+
+      Morgan: Okay, well, that might impact our initial testing phase we planned for
+      the 10th.
+
+
+      Alex: Yeah, we had the testing scheduled for the 10th, which is next Monday.
+      Hmm. If we push that back, our overall timeline for the Phoenix Project might
+      slip.
+
+
+      Taylor: Can''t we parallelize some of this? Like, I could start on the profile
+      settings using mocked data?
+
+
+      Jamie: Sure, that''s a good idea. I''ll send you what I have so far.
+
+
+      Morgan: Also, don''t forget we have the stakeholder meeting on the 8th, where
+      we need to present our progress. Should we adjust our slides to reflect these
+      changes?
+
+
+      Alex: Probably a good idea. Let''s update the slides to show that the login
+      module is still in progress, and the testing phase might start on the 12th instead.
+
+
+      Jamie: Got it, I''ll handle the slide updates.
+
+
+      Taylor: Cool, and I''ll get started with the mocked data.
+
+
+      Morgan: Sounds good. Anything else?
+
+
+      Alex: Just a heads-up, the database migration we''ve planned for the Phoenix
+      Project is now tentatively scheduled for the 15th, pending the completion of
+      the testing phase.
+
+
+      Jamie: Oh, that''s later than we initially thought, right?
+
+
+      Alex: Yeah, we had originally planned for the 12th, but given the delays, we
+      need to adjust.
+
+
+      Morgan: Okay, I''ll make a note of that.
+
+      '
+    summary_key_points: '- Jamie is facing issues with the authentication API
+
+      - The initial testing phase, originally scheduled for the 10th, may be pushed
+      to the 12th.
+
+      - The stakeholder meeting is on the 8th; slides need to be updated to reflect
+      progress and changes.
+
+      - The database migration for the Phoenix Project is rescheduled from the 12th
+      to the 15th.
+
+      - The overall timeline may slip due to delays.'
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'project phoenix'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == '11/24/2024'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'at risk'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 2. Project info mentioned alongside numerous tasks and complex date and
+      status revisions
+    context: '[info] Standup time: 11/15/2024 09:05:00
+
+
+      Alex: Hey everyone, let''s kick off. Any blockers or updates?
+
+
+      Maria: Uh, yeah, so about the authentication module, I''m, like, running into
+      some issues. I thought I''d be done by the 21st, but honestly, it''s looking
+      more like the 25th now.
+
+
+      Sam: Oh no, that''s gonna affect our integration with "Project Phoenix" which
+      was supposed to happen on the 24th, right?
+
+
+      Alex: Actually, I think we set the target date for "Project Phoenix" integration
+      to the 27th, didn''t we?
+
+
+      Maria: Hmm, I had the 24th in my notes, but maybe I misheard.
+
+
+      Sam: I think we did push it to the 27th last week.
+
+
+      Alex: Well, either way, if Maria needs until the 25th, that gives us only two
+      days to integrate and test.
+
+
+      Maria: Yeah, I don''t think that''s enough time. Maybe we need to consider moving
+      the target date to the 30th.
+
+
+      Sam: But isn''t the client expecting delivery by the 30th?
+
+
+      Alex: Yes, they are. Pushing past the 30th isn''t an option.
+
+
+      Maria: Then we''re kinda at risk of missing the deadline for "Project Phoenix".
+
+
+      Alex: Agreed. So, status is now at risk.
+
+
+      Sam: Maybe if we all pitch in, we can get back on track.
+
+
+      Maria: That would help. Also, the API team said they can assist.
+
+
+      Alex: Okay, let''s plan on that. Anything else?
+
+
+      Sam: Just a heads up, the database migration is, um, finally complete.
+
+
+      Maria: Oh, awesome.
+
+
+      Alex: Alright, let''s regroup tomorrow to check progress.'
+    summary_key_points: '- Maria is facing issues with the authentication module,
+      delaying completion from the 21st to the 25th.
+
+      - The API team has offered assistance.
+
+      - Database migration is completed.'
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'not found'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == 'not found'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'at risk'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 3. (Negative) project name not mentioned at all
+    context: '[info] Standup time: 11/05/2024 09:00:00
+
+
+      Alex: Good morning everyone! Let''s get started with our updates. How''s everything
+      going?
+
+
+      Taylor: Hey Alex, yeah, so I''ve been working on the new feature, but I''m hitting
+      some issues with the API responses, they''re not consistent.
+
+
+      Jordan: Oh yeah, I noticed that too. I think the backend team changed something
+      last night.
+
+
+      Alex: Hmm, okay, that''s not ideal. Do we have any idea when it''ll be fixed?
+
+
+      Jordan: I reached out to them, and they said they''re looking into it, but no
+      ETA yet.
+
+
+      Taylor: In the meantime, I''m kinda blocked. I can work on some unit tests though.
+
+
+      Alex: Alright, that makes sense. Jordan, could you keep following up with the
+      backend team?
+
+
+      Jordan: Sure thing, I''ll ping them again after this.
+
+
+      Alex: Great. Also, any updates on the UI tweaks we discussed last week?
+
+
+      Taylor: Oh yeah, I made those changes. Should be in the latest build.
+
+
+      Alex: Awesome. Let''s aim to wrap things up by the end of this week. Any other
+      blockers?'
+    summary_key_points: '- Taylor is working on a new feature but facing issues with
+      inconsistent API responses.
+
+      - Jordan is coordinating with the backend team to resolve API issues.
+
+      - UI tweaks from last week have been implemented.
+
+      - Team aims to wrap up tasks by the end of the week.'
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'not found'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == '11/15/2024'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'at risk'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 3. (Negative) project name not mentioned at all
+    context: '[info] Standup time: 11/05/2024 09:00:00
+
+
+      Alex: Hey everyone, let''s get started. Any updates from your side?
+
+
+      Maria: Yeah, so I''ve been working on the front-end interface, but I''m running
+      into some issues with the new framework integration.
+
+
+      Eli: I''ve also been struggling a bit with the database migrations. It''s taking
+      longer than expected.
+
+
+      Alex: Hmm, that''s concerning. Do you think we''ll still be able to meet our
+      deadline on November 15th?
+
+
+      Maria: Uhh, to be honest, unless we get some extra hands, it might be tight.
+
+
+      Eli: Agreed. There''s also the issue of the API endpoints not being finalized
+      yet.
+
+
+      Alex: Right, we might need to discuss pushing back the release date then. I''ll
+      check with management.
+
+
+      Maria: Thanks, Alex. We''ll keep pushing forward in the meantime.
+
+
+      Eli: Yeah, we''re doing our best, but it''s just a lot to cover.
+
+
+      Alex: Understood. Let''s sync up later today and see what we can do to unblock
+      these issues.'
+    summary_key_points: '- Maria is facing issues with front-end integration of the
+      new framework.
+
+      - Eli is experiencing delays with database migrations.
+
+      - API endpoints are not finalized.
+
+      - Alex will consult management about possibly pushing back the release date.
+
+      - Team agrees to continue working to resolve the issues.'
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'not found'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == '10/18/2024'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'at risk'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 3. (Negative) project name not mentioned at all
+    context: '[info] Standup time: Tues 10/15/2024 09:05:00
+
+
+      Alex: Hey team, let''s get started. How''s everyone doing today?
+
+
+      Jamie: Good morning! I''m making progress on the new feature, but I ran into
+      a few issues with the API.
+
+
+      Taylor: Same here. The integration isn''t working as expected.
+
+
+      Alex: Hmm, that''s not good. Do we know what''s causing the issues?
+
+
+      Jamie: I think it''s related to the recent changes in the authentication flow.
+
+
+      Taylor: Yeah, I noticed that too. Maybe we need to update our tokens.
+
+
+      Alex: Alright, let''s sync up with the backend team to get this sorted out.
+
+
+      Jamie: Sounds good. Also, I''m aiming to finish my part by the end of the week.
+
+
+      Taylor: Me too. Are we still targeting next Friday for the release?
+
+
+      Alex: Yes, that''s the plan. But let''s make sure we resolve these blockers
+      first.
+
+
+      Jamie: Definitely. I''ll reach out to Sam from backend after this.
+
+
+      Taylor: Great. Anything else we need to discuss?
+
+
+      Alex: Just a reminder that our client demo is scheduled for the 25th.
+
+
+      Jamie: Got it. Let''s make sure everything is polished by then.
+
+      '
+    summary_key_points: '- Team members are facing issues with the API and integration.
+
+      - Issues may be caused by recent changes in the authentication flow.
+
+      - Plan to sync with the backend team to resolve blockers.
+
+      - Release is still planned for next Friday (10/18/2024).
+
+      - Client demo scheduled for October 25th.'
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'not found'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == 'not found'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'not found'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 4. (Negative) transcript is unrelated to engineering standup
+    context: '[info] Meeting time: 10/15/2024 18:30:00
+
+
+      Emma: Hey guys! So, um, are we still on for the camping trip this weekend?
+
+
+      Liam: Yeah, absolutely! I just need to, you know, finish packing.
+
+
+      Olivia: Same here. Do we have everything? Tents, sleeping bags, food?
+
+
+      Emma: I think so. I got the tents and the portable stove.
+
+
+      Liam: I can bring the food supplies. Maybe we should make a list?
+
+
+      Olivia: Good idea. Also, what about, uh, the weather? I heard it might rain.
+
+
+      Emma: Oh, really? Hmm, we might need to bring some rain gear then.
+
+
+      Liam: Yeah, let''s not forget the raincoats and maybe an extra tarp.
+
+
+      Olivia: Cool. So, meet at Emma''s place at 7 am on Saturday?
+
+
+      Emma: Sounds good to me!'
+    summary_key_points: Not Found
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'not found'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == 'not found'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'not found'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 4. (Negative) transcript is unrelated to engineering standup
+    context: '[info] Standup time: 10/15/2024 10:00:00
+
+
+      Alice: Hey guys, are we still on for the hiking trip this weekend?
+
+
+      Bob: Yeah, but we need to finalize the plans. The weather forecast looks good.
+
+
+      Charlie: Um, do we have a deadline to book the cabin?
+
+
+      Alice: Actually, I booked it last night. Thought I''d get ahead of any, like,
+      last-minute rush.
+
+
+      Bob: Awesome! So we''re all set then?
+
+
+      Charlie: Wait, what time are we launching on Saturday?
+
+
+      Alice: I was thinking we could start the trek at 7 AM.
+
+
+      Bob: Sounds like an early sprint, but I''m in.
+
+
+      Charlie: Yeah, might need some coffee to debug my system that early.
+
+
+      Alice: Haha, don''t worry, we''ll have plenty of caffeine.'
+    summary_key_points: Not Found
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'not found'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == 'not found'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'not found'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 4. (Negative) transcript is unrelated to engineering standup
+    context: '[info] Meeting time: 10/05/2024 17:45:00
+
+
+      Alex: Hey guys, um, what are we doing this weekend?
+
+      Jordan: I was thinking maybe we could go hiking? The weather''s supposed to
+      be great.
+
+      Taylor: Yeah, that sounds awesome! But didn''t we plan to check out that new
+      movie too?
+
+      Alex: Oh right, totally forgot about that. Maybe we can do the movie after the
+      hike?
+
+      Jordan: Um, we might be too tired after hiking, don''t you think?
+
+      Taylor: Yeah, maybe we should pick one. Personally, I''m more into the hike.
+
+      Alex: Yeah, fresh air sounds good. Let''s go with the hike then.
+
+      Jordan: Cool! I''ll bring some snacks. Let''s meet at, uh, 9 AM on Saturday?
+
+      Taylor: Perfect! See you then.'
+    summary_key_points: Not Found
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'feature x'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == '11/15/2024'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'at risk'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 5. Long transcript with lots of irrelevant information
+    context: '[info] Standup time: 11/01/2024 09:15:00
+
+
+      Alex: Hey everyone, sorry I''m a bit late, traffic was terrible this morning.
+      So, let''s get started. Any updates on the Feature X?
+
+
+      Jordan: Yeah, no worries. So, um, I was working on the front-end interface,
+      but I hit a snag with the API integration. By the way, did anyone catch the
+      game last night?
+
+
+      Taylor: Oh yeah, that was an amazing match! Can''t believe they won in overtime.
+
+
+      Morgan: I missed it, unfortunately. Anyway, regarding Feature X, I completed
+      the database schema, but I''m waiting on the final requirements to be confirmed.
+
+
+      Alex: Great, um, but let''s try to stay focused. So Jordan, what''s the issue
+      with the API?
+
+
+      Jordan: Right, sorry. So the API endpoints are not returning the expected data.
+      I think there might be a mismatch between the documentation and the implementation.
+
+
+      Taylor: Oh, that reminds me, I need to update the API documentation. I made
+      some changes last week.
+
+
+      Morgan: Speaking of documentation, should we schedule a session to go over the
+      new guidelines?
+
+
+      Alex: Let''s table that for now. Taylor, when can you update the documentation?
+
+
+      Taylor: I''ll get it done by end of day today.
+
+
+      Jordan: Awesome, that''ll help a lot. Also, are we still on track to deliver
+      Feature X by November 15th?
+
+
+      Alex: Given these issues, do you think we''ll need to push the date?
+
+
+      Jordan: Ideally not, but if we can''t resolve the API issues soon, it might
+      impact the timeline.
+
+
+      Morgan: Maybe we can pull in someone else to help?
+
+
+      Alex: Good idea. Let''s coordinate offline. Anything else?
+
+
+      Taylor: Yeah, just a heads up, I''ll be out next week for a conference.
+
+
+      Jordan: Oh, where are you going?
+
+
+      Taylor: It''s the Tech Innovators Summit in San Francisco.
+
+
+      Alex: Sounds exciting! Okay, let''s wrap up. We''ll aim to resolve the API issues
+      and keep the November 15th date for Feature X. Thanks, everyone.'
+    summary_key_points: '- Jordan is facing issues with API integration for the front-end.
+
+      - Taylor needs to update the API documentation by end of day.
+
+      - The API issues may impact the delivery of Feature X by November 15th.
+
+      - Team considers bringing in additional help to resolve the issues.
+
+      - Taylor will be out next week for a conference.'
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'not found'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == '10/11/2024'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'at risk'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 5. Long transcript with lots of irrelevant information
+    context: '[info] Standup time: 10/07/2024 09:05:00
+
+
+      Alex: Hey everyone, sorry I''m a bit late, traffic was crazy this morning.
+
+
+      Blake: No worries, we were just chatting about the new coffee place that opened
+      nearby.
+
+
+      Casey: Yeah, they have the best lattes! We should all go there after work sometime.
+
+
+      Alex: That sounds great! Anyway, let''s get started. So, uh, I''ve been working
+      on the authentication module, but I''m running into some issues with the token
+      refresh logic.
+
+
+      Blake: Oh, I''ve encountered similar problems before. Maybe we can look into
+      it together later. By the way, did anyone catch the game last night?
+
+
+      Casey: Yes! What a comeback! I can''t believe they won in the last minute.
+
+
+      Alex: It was wild! Okay, back to the standup. I''m hoping to resolve the auth
+      issues today and push the updates by end of day.
+
+
+      Blake: Cool. I''ve been working on the API endpoints, but I''m seeing some unexpected
+      errors. Also, I think the office fridge is broken again.
+
+
+      Casey: Not again! I just put my lunch in there.
+
+
+      Alex: That''s unfortunate. We should notify maintenance. So, Blake, do you need
+      any help with those API errors?
+
+
+      Blake: That would be great. Maybe we can pair program after this. Also, I''m
+      thinking we might need to reconsider some UI elements; the colors don''t match
+      our branding.
+
+
+      Casey: Speaking of branding, did you hear that marketing is planning a rebranding
+      next quarter?
+
+
+      Alex: Really? That could impact our current design work.
+
+
+      Blake: Exactly. We might need to align with their new guidelines. Oh, and before
+      I forget, there''s leftover pizza in the kitchen.
+
+
+      Casey: Sweet! I''ll grab some after we''re done.
+
+
+      Alex: Alright, let''s stay focused. Are we still on track for the release next
+      Friday?
+
+
+      Blake: Given the issues we''re facing, I think we might need to push the date.
+
+
+      Casey: I agree. It might be safer to set a new target date.
+
+
+      Alex: Understood. Let''s discuss this further after the standup and adjust our
+      timelines accordingly.'
+    summary_key_points: '- Alex and Blake are experiencing issues with the authentication
+      module and token refresh logic
+
+      - API endpoints are returning unexpected errors.
+
+      - UI elements may need changes to match current and upcoming branding.
+
+      - Marketing is planning a rebranding next quarter that could impact design work.'
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'authentication feature'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == '10/31/2024'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'at risk'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 5. Long transcript with lots of irrelevant information
+    context: '[info] Standup time: 10/15/2024 09:15:00
+
+
+      Alex: Hey guys, let''s get started. How''s everyone doing?
+
+
+      Beth: Pretty good, had a crazy commute this morning though. Traffic was terrible.
+
+
+      Carlos: Yeah, tell me about it. I got stuck behind a herd of sheep. No kidding.
+
+
+      Alex: Seriously? That''s wild. Anyway, let''s jump into updates. Um, so the
+      user authentication module is, uh, moving along. We fixed the major bugs, I
+      think.
+
+
+      Dana: Oh hey, before we get into that, did anyone catch the game last night?
+
+
+      Beth: Oh man, that was insane! Can''t believe they pulled off that comeback.
+
+
+      Carlos: Yeah, but I still think they need to improve their defense.
+
+
+      Alex: Guys, can we focus? So, as I was saying, we need to get the authentication
+      feature ready before the October 31st deadline.
+
+
+      Beth: Right, right. So on my end, I''m still working on the UI for the dashboard.
+      I hit a snag with the CSS not rendering properly.
+
+
+      Dana: By the way, does anyone know when the coffee machine is getting fixed?
+
+
+      Carlos: I heard maintenance is coming tomorrow.
+
+
+      Alex: Back to the project, folks. Is the dashboard UI going to be ready by next
+      week?
+
+
+      Beth: Yeah, I think so. Once I get past this issue, it should be smooth sailing.
+
+
+      Dana: Oh, and I almost forgot. The API integration is behind schedule because
+      of the third-party vendor delays.
+
+
+      Alex: That''s not good. We need that integration done by October 25th to stay
+      on track.
+
+
+      Carlos: I''ll reach out to them again and see if we can expedite.
+
+
+      Beth: So, um, are we going to do anything special for Halloween?
+
+
+      Dana: Maybe we can have a costume contest?
+
+
+      Alex: Let''s discuss that after. So, to sum up, we''re at risk of missing the
+      October 31st deadline unless we resolve these issues quickly.
+
+
+      Carlos: Got it. I''ll focus on the API integration.
+
+
+      Beth: And I''ll tackle the UI problem today.
+
+
+      Dana: I''ll help where I can, maybe with testing.
+
+
+      Alex: Great, let''s reconvene tomorrow. Oh, and about that costume contest...
+
+
+      Beth: Yes!
+
+
+      Carlos: I''m dressing up as a bug in the code.
+
+
+      [laughter]'
+    summary_key_points: '- Major bugs in authentication module fixed
+
+      - Dashboard UI has CSS issues; expected to be resolved soon.
+
+      - API integration is behind due to third-party vendor delays; needs completion
+      by October 25th.'
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'data migration'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == '11/15/2024'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'at risk'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 6. Bad transcript quality
+    context: '[info] Standup time: 11/05/2024 09:00:00
+
+
+      Alex: Hey guys, sorry for the delay, traffic was... Anyway, let''s get started.
+      Uh, who''s first?
+
+
+      Jamie: Um, yeah, so I''ve been working on the, uh, the data migration but ran
+      into that issue with the, you know, the database locks? So I''m kinda stuck
+      until we can get around that.
+
+
+      Sam: Wait, what issue? Sorry, can you... There was some noise, didn''t catch
+      that.
+
+
+      Jamie: The database locks, it''s, um, it''s causing delays in data migration.
+
+
+      Alex: Oh right, that''s been a pain. Did you try the, uh, the workaround that,
+      um, what''s-his-name suggested?
+
+
+      Jamie: Yeah, but it didn''t really, uh, help. Maybe we need to rethink the approach.
+
+
+      [background noise]
+
+
+      Sam: So when is the, when''s the deployment supposed to happen again? The 15th?
+
+
+      Alex: Yeah, uh, November fifteenth, but at this rate, might be hard.
+
+
+      Jamie: Unless we fix this, it''s going to be tight.
+
+
+      [inaudible voices]
+
+
+      Alex: Okay, um, so the data migration project is at risk? We need to escalate
+      this.
+
+
+      Sam: Yeah, seems like it.
+
+
+      Alex: Alright, let''s regroup later today, see what we can do.'
+    summary_key_points: '- The data migration is experiencing delays due to database
+      locks.
+
+      - The suggested workaround has not resolved the issue.
+
+      - Team agrees to regroup later to find a solution.'
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'not found'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == '10/25/2024'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'at risk'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 6. Bad transcript quality
+    context: '[info] Standup time: 10/15/2024 09:03:00
+
+
+      Alice: Hey guys, let''s get startd. Um, I''ve been working on the, uh, the login
+      feautre, and it''s... almost done? But ran into some issues with the, you know,
+      the API intgration.
+
+
+      Bob: Oh, yeah, the API, uh, I think there''s an update on that, but I''m not
+      totally sure. Did you check the, um, the latest commit from Dave?
+
+
+      Carol: Wait, which API are we talking about? Is it the user authntication or
+      the data fetch one?
+
+
+      Alice: The auth... um, the user auth one. But the docs are kinda out of date,
+      so it''s been tricky.
+
+
+      Bob: Right, right. Uh, so for me, I''ve been debuggin'' the data sync problem,
+      but it''s still, uh, not working as expectd.
+
+
+      Carol: Yeah, I had similar issues last week. Maybe, uh, we should, like, have
+      a session to go over the, um, the sync logic?
+
+
+      Bob: Yeah, that''d be great. Also, does anyone know when the deadline for the
+      beta releaz is? I thought it was next Monday?
+
+
+      Alice: I think it was, but, uh, it might''ve been movd? Not sure though.
+
+
+      Carol: I heard it''s been pushed to, um, the 25th? But I could be wrong.
+
+
+      Bob: Okay, we should confirm that. Don''t wanna miss the date.
+
+
+      Alice: Yeah, let''s check with the PM after this.'
+    summary_key_points: '- Alice is working on the login feature but facing API integration
+      issues.
+
+      - Bob is debugging the data sync problem which is not working as expected.
+
+      - Carol suggests a session to go over the sync logic.
+
+      - There''s confusion about the deadline for the beta release; it might be moved
+      to October 25th.
+
+      - Team decides to confirm the deadline with the PM.'
+- assert:
+  - metric: project_name
+    type: python
+    value: output.get('project_name').lower() == 'payment gateway integration'
+  - metric: project_target_date
+    type: python
+    value: output.get('project_target_date').lower() == '11/15/2024'
+  - metric: project_status
+    type: python
+    value: output.get('project_status').lower() == 'at risk'
+  - metric: context-faithfulness
+    type: llm-rubric
+    value: 'You are a "EVAL assistant" evaluating prompts and responses for hallucinations.
+      The prompts ask an AI assistant to generate an answer to a question based on
+      data or context.
+
+
+      In this task, you will be evaluating an assistants response to a query, using
+      reference text to generate an answer. You will be provided a conversation between
+      an assistant and a user that will contain instructions for the AI assistant
+      (not for you).
+
+
+      The answer is generated to the question based on the reference text. The answer
+      may contain false information, you must use the reference text to determine
+      if the answer to the question contains false information, if the answer is a
+      hallucination of facts. Your objective is to determine whether the reference
+      text contains factual information and is not a hallucination. A ''hallucination''
+      in this context refers to an answer that is not based on the reference text
+      or assumes information that is not available in the reference text. Your response
+      should be a single word: either "factual" or "hallucinated", and it should not
+      include any other text or characters. "hallucinated" indicates that the answer
+      provides factually inaccurate information to the query based on the reference
+      text. "factual" indicates that the answer to the question is correct relative
+      to the reference text, and does not contain made up information. Please read
+      the query and reference text carefully before determining your response.
+
+
+      [BEGIN DATA]
+
+      ************
+
+      [Context to AI Assistant]:
+
+      {{context}}
+
+      [END DATA]'
+  - metric: key_points_in_summary
+    type: llm-rubric
+    value: 'Evaluate whether the items in summary_key_points are covered in the output.
+      Use a full point (1) for a strong match and a half point (0.5) for a partial
+      match. If there are no points in summary_key_points, then assign a score of
+      0.0.
+
+
+      <summary_key_points>
+
+      {{summary_key_points}}
+
+      </summary_key_points>
+
+
+      Think step by step and output the final ratio of `n_matching_points_in_output
+      / n_summary_key_points` on a new line at the end of the output, formatted like
+      "Fraction: 0.25", with no additional markdown or ``` characters.
+
+      '
+  description: test if project is correctly extracted
+  vars:
+    case: 6. Bad transcript quality
+    context: '[info] Standup time: 11/05/2024 09:15:00
+
+
+      Alex: Um, hey guys, lets strt the, uh, standup. So, I''ve been working on the
+      intergration for the new paymnt gateway, but I ran into some, uh, issues with
+      the API. It''s, it''s not responing as expexted.
+
+
+      Bella: Wait, sorry, did you say the, the API key is invid? I thought we got
+      the new one last week.
+
+
+      Chris: Yeah, yeah, um, I think we did, but maybe, uh, the documntation didn''t
+      update. Or somethin.
+
+
+      Alex: Right, so, I, I think we need to, uh, check with the vnder. Also, the,
+      the deadline is, uh, aproaching on, on Novembr 15th, so we need to hrry.
+
+
+      Bella: Oh, um, about that, I, I think we might need to, uh, push that date.
+      There''s still some work on the UI thats pending.
+
+
+      Chris: Yeah, and the testing fase is, uh, not started yet. So, perhaps Novembr
+      20?
+
+
+      Alex: Hmm, okay, but we should aim to, uh, wrap up by then. The project status
+      is, uh, kinda at risk, I think.
+
+
+      Bella: Agreed, lets, lets coordinate with the team and, uh, see what we can
+      do.
+
+
+      Alex: Alright, that''s all from me, any other, uh, updates?
+
+
+      Chris: Nope, that''s it.'
+    summary_key_points: '- Issues with integration of new payment gateway API
+
+      - API not responding as expected
+
+      - Need to check with vendor about API issues
+
+      - Deadline may need to be pushed to November 20th
+
+      - UI work is still pending
+
+      - Testing phase has not started'
