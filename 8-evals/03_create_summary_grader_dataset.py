@@ -1,9 +1,4 @@
 # %%
-# Principles
-# - Define inputs and outputs
-# - Create a small, representative, challenging dataset
-# - Create labels
-# - Test a prompt
 
 import os
 import pandas as pd
@@ -112,3 +107,5 @@ pd.DataFrame(results).sort_values(by="new_input_case").to_csv(
 )
 
 print("saved to", filename)
+
+# %%

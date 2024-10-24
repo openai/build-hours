@@ -1,9 +1,5 @@
 # %%
-# Principles
-# - Define inputs and outputs
-# - Create a small, representative, challenging dataset
-# - Create labels
-# - Test a prompt
+# Create a stanbot eval
 
 import os
 import pandas as pd
@@ -120,3 +116,5 @@ os.makedirs(output_dir, exist_ok=True)
 pd.DataFrame(results).sort_values(by="new_input_case").to_csv(
     os.path.join(output_dir, filename), index=False
 )
+
+# %%
