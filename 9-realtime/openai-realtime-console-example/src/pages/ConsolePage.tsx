@@ -160,7 +160,7 @@ export function ConsolePage() {
 
   /**
    * Connect to conversation:
-   * WavRecorder taks speech input, WavStreamPlayer output, client is API client
+   * WavRecorder task speech input, WavStreamPlayer output, client is API client
    */
   const connectConversation = useCallback(async () => {
     const client = clientRef.current;
@@ -458,7 +458,7 @@ export function ConsolePage() {
       {
         name: 'submit_email_query',
         description:
-          'Use this when the user asks a quesiton about their email, or simply a question about personal information.',
+          'Use this when the user asks a question about their email, or simply a question about personal information.',
         parameters: {
           type: 'object',
           properties: {
