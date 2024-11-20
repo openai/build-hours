@@ -116,17 +116,17 @@ The LLM agent has access to the following functions:
         - If we do not have sufficient production capacity, a purchase order will need to be made to the supplier
     - schedule_production_run(product_id, quantity, time_frame)
         - This function convert the available production supply to product.
-        - Any production scheduled will reduce the production capacity immedatiely available and available next week.
+        - Any production scheduled will reduce the production capacity immediately available and available next week.
         - The time frame values can match the production capacity options: 'immediate' or 'next_week'
         - If a production run is scheduled with time frame 'immediate', it will automatically update our inventory with the new capacity. We should not call 'update_inventory' after.
     - calculate_shipping_options(destination, weight, dimensions)
-        - This function determines the availablwe shipping options and costs
+        - This function determines the available shipping options and costs
         - Only currently available inventory can be shipped
         - Destination should match the destination name on the order
     - book_shipment(order_id, carrier_id, service_level)
         - This will book a shipment for a current order.
     - send_order_update(customer_id, order_id, message)
-        - This will send an update to the customer and is necessary for any communincations
+        - This will send an update to the customer and is necessary for any communications
         - It is important to keep customers in the loop about the status of the order
 
 When creating a plan for the LLM to execute, break your instructions into a logical, step-by-step order, using the specified format:

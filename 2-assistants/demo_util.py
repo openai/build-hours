@@ -64,7 +64,7 @@ def function_to_schema(func) -> dict:
     }
 
 
-# ===== Examle =====
+# ===== Example =====
 
 
 def sample_function(param_1, param_2, the_third_one: int):

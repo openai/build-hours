@@ -177,7 +177,7 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "schedule_production_run",
-            "description": "This function convert the available production supply to product. Any production scheduled will reduce the production capacity immedatiely available and available next week. If the quantity exceeds the immediately available production, it will fail. If a production run is scheduled with time frame 'immediate', it will automatically update our inventory with the new capacity.",
+            "description": "This function convert the available production supply to product. Any production scheduled will reduce the production capacity immediately available and available next week. If the quantity exceeds the immediately available production, it will fail. If a production run is scheduled with time frame 'immediate', it will automatically update our inventory with the new capacity.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -204,7 +204,7 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "calculate_shipping_options",
-            "description": "This function determines the availablwe shipping options and costs. Only currently available inventory can be shipped",
+            "description": "This function determines the available shipping options and costs. Only currently available inventory can be shipped",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -256,7 +256,7 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "send_order_update",
-            "description": "This will send an update to the customer and is necessary for any communincations. It is important to keep customers in the loop about the status of the order",
+            "description": "This will send an update to the customer and is necessary for any communications. It is important to keep customers in the loop about the status of the order",
             "parameters": {
                 "type": "object",
                 "properties": {
