@@ -86,7 +86,7 @@ prompts = [
         - At Risk: It's unlikely the project will be delivered on the planned date.
             - Includes language like "delayed" or "taking longer than expected" or "need more resourcing".
             - If there are any blockers, especially ones without a clear path to quick resolution, then the project should be At Risk.
-            - If the team is discussing pulling in more personnell to help, the project should be At Risk.
+            - If the team is discussing pulling in more personnel to help, the project should be At Risk.
     
     ## Project Target Date
     - Look for explicit information about when a project is scheduled to ship. Even if the date is at risk, it's important to extract any mentioned dates for when the project was planned to launch.

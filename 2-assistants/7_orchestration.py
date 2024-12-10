@@ -58,7 +58,7 @@ def run_full_turn(agent, messages):
             if type(result) is Agent:  # if agent transfer, update current agent
                 current_agent = result
                 result = (
-                    f"Transfered to {current_agent.name}. Adopt persona immediately."
+                    f"Transferred to {current_agent.name}. Adopt persona immediately."
                 )
 
             result_message = {
@@ -180,7 +180,7 @@ issues_and_repairs_agent = Agent(
         "1. First, ask probing questions and understand the user's problem deeper.\n"
         " - unless the user has already provided a reason.\n"
         "2. Propose a fix (make one up).\n"
-        "3. ONLY if not satesfied, offer a refund.\n"
+        "3. ONLY if not satisfied, offer a refund.\n"
         "4. If accepted, search for the ID and then execute refund."
         ""
     ),
