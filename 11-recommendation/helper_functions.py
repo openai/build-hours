@@ -1,14 +1,15 @@
-from typing import List, Dict, Any
-from qdrant_client import QdrantClient, models
-import logging
-from config import Config
-import os
-import csv
 import json
+import logging
+
+from enum import Enum
+from typing import Any, Dict, List
+
 from openai import OpenAI
 from pydantic import BaseModel
-from enum import Enum
-from pydantic import BaseModel, field_validator
+from qdrant_client import QdrantClient, models
+
+from config import Config
+
 
 
 openai_client = OpenAI()  # Corrected client initialization
@@ -265,7 +266,7 @@ def expand_query_with_llm(query: str,  past_history: List[Dict[str, Any]]) -> st
         past_purchases_entries = "".join([
             f"<past_purchase>Item: {purchase['product_name']}</past_purchase>" for purchase in past_history
         ])
-        system_prompt = f"""**Instructions to the Assistant**
+        system_prompt = f"""
 
             You are an event planner with access to a product catalog.
 
@@ -325,14 +326,7 @@ def expand_query_with_llm(query: str,  past_history: List[Dict[str, Any]]) -> st
 
             {past_purchases_entries}
 
-
-
-
             """
-
-
-
-
 
         response = openai_client.beta.chat.completions.parse(
             model="gpt-4o",  
@@ -343,10 +337,6 @@ def expand_query_with_llm(query: str,  past_history: List[Dict[str, Any]]) -> st
             response_format=CategoryRecommendations
 
         )
-       
-
-
-
         # Extract the generated text
         expanded_query = response.choices[0].message.content
         logger.info("Query expanded successfully using LLM.")
