@@ -25,9 +25,7 @@ def main():
     with st.expander("Show Previous Purchases"):
         for purchase in past_purchases:
             st.write(f"{purchase['product_name']} - Purchased {purchase['quantity']} times")
-
-    # Button to Generate Recommendations
-
+    # Display Recommended Products
     st.subheader("Recommended Products")
     recommendations = get_propensity_recommendations()
     for recommendation in recommendations:
@@ -35,33 +33,28 @@ def main():
         with col1:
             image_id = recommendation.get('id')
             current_dir = os.path.dirname(__file__)
-
             # Construct the absolute path to the images folder
             images_dir = os.path.join(current_dir, '..', 'images')
-
             # Construct the full image path
             image_path = os.path.join(images_dir, f'{image_id}.jpg')
             st.image(image_path, width=150)
         with col2:
             st.write(f"**{recommendation['product_name']}** - Predicted Score: {recommendation['predicted_score']}")
-
             # Define a callback function for the button
             def generate_explanation(recom=recommendation):
                 logger.info(f"Generating explanation for {recom['product_name']}")
                 explanation = generate_recommendation_explanation(recom, past_purchases)
                 st.session_state.explanations[recom['product_name']] = explanation
                 # st.experimental_rerun()
-
-            # Generate Explanation Button with callback
+            # Button to Generate Explanation
             st.button(
                 f"Generate Explanation for {recommendation['product_name']}",
                 key=f"gen_{recommendation['product_name']}",
                 on_click=generate_explanation
             )
-
             # Display Explanation if it exists in session state
             if recommendation['product_name'] in st.session_state.explanations:
                 st.write(f"**Explanation:** {st.session_state.explanations[recommendation['product_name']]}")
-
+                
 if __name__ == "__main__":
     main()

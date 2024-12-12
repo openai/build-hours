@@ -26,16 +26,21 @@ The purpose of this repo is to show how LLMs can be used to enhance recomendatio
 ```
 unzip images.zip
 ```
-3. Spin up Qdrant. We use locally hosted Qdrant as our vector database for this example. 
-```
+3. Create a new virtual environment and install the requirements.
+``` 
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
+```
+4. Spin up Qdrant. We use locally hosted Qdrant as our vector database for this example. 
+```
 docker-compose up -d
 ```
-4. Upload data to Qdrant
+5. Upload data to Qdrant
 ```
 python upload-to-qdrant.py
 ```
-5. Run the Streamlit app (make sure OpenAI API Key is set as env variable)
+6. Run the Streamlit app (make sure OpenAI API Key is set as env variable)
 ```
 export OPENAI_API_KEY=<your-openai-api-key>
 streamlit run app.py

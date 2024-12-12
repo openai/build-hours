@@ -10,14 +10,11 @@ from qdrant_client import QdrantClient, models
 
 from config import Config
 
-
-
 openai_client = OpenAI()  # Corrected client initialization
 qdrant_client = QdrantClient(host=Config.QDRANT_HOST, port=Config.QDRANT_PORT)
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 ## Both Pages:  User Info
 
@@ -196,13 +193,11 @@ def get_past_purchases() -> List[Dict[str, Any]]:
 
     return selected_records
 
-
 ###  Page 1: 
 
 ## Expand Query
 # Structured Outputs to limit the LLM's response to specific categoriess
 
-# 
 class CategoryEnum(Enum):
     TOOLS_HAND_TOOLS = "Tools: Hand Tools"
     TOOLS_POWER_TOOLS = "Tools: Power Tools"
@@ -244,6 +239,7 @@ class CategoryEnum(Enum):
     SAFETY_FIRST_AID_SUPPLIES = "Safety: First Aid Supplies"
     SAFETY_FIRE_EXTINGUISHERS = "Safety: Fire Extinguishers"
     SAFETY_SAFETY_SIGNS = "Safety: Safety Signs"
+
 class Category(BaseModel):
     item: CategoryEnum
     description: str
@@ -267,10 +263,7 @@ def expand_query_with_llm(query: str,  past_history: List[Dict[str, Any]]) -> st
             f"<past_purchase>Item: {purchase['product_name']}</past_purchase>" for purchase in past_history
         ])
         system_prompt = f"""
-
-            You are an event planner with access to a product catalog.
-
-            Your task is to:
+            You are an event planner with access to a product catalog. Your task is to:
 
             1. **Analyze the User's Input**: Based on the user's stated goals, identify up to 7 relevant unique categories from the provided list that align with their interests and needs. Ensure that they are relevant to the user's goals.
 
@@ -279,32 +272,19 @@ def expand_query_with_llm(query: str,  past_history: List[Dict[str, Any]]) -> st
             - Bias towards categories that are complementary to the user's past purchases. However, if the user's goal is not related to their past purchases, do not include any categories related to their past purchases.
 
             3. **Craft Engaging Descriptions**:
-            - For each selected category, write a fun and playful description to excite the user about their project.
+            - For each selected category, write a fun and playful description in 3 sentences to excite the user about their project.
             - ONLY if applicable, mention how their past purchases contribute to their progress, highlighting that they're already on their way.
-
             
-            **Best Practices**:
-            4. **Include Essential and Complementary Categories**:
-            - Incorporate both categories that are essential for the user's project and those that offer complementary products (e.g., suggesting outdoor furniture for someone building a deck).
-
-            5. **Reference Past Purchases**:
-            - Utilize the past purchases provided, which are delimited by `<past_purchase>` tags, to personalize recommendations and reinforce progress. If the past purchase is not relevant, do not include it in the description.
-
-            6. **Output Format**:
-            - Present your findings in a JSON format as shown in the example below, which is delimited by `</example>` tags.
-            - Ensure the JSON is correctly structured and valid.
-
-            7. **Additional Behavioral Notes**:
+            **Rules**:
             - **Relevance**: Ensure all categories and descriptions are tailored to the user's input and past purchases.
             - **Tone**: Maintain a fun and playful tone to engage the user.
             - **Quantity**: Do not exceed 7 categories in your final list.
-        
+            - **Include Essential and Complementary Categories**:  Incorporate both categories that are essential for the user's project and those that offer complementary products (for example, patio furniture for a deck project). 
+            - Utilize the past purchases provided, which are delimited by `<past_purchase>` tags, to personalize recommendations and reinforce progress. If the past purchase is not relevant, do not include it in the description.
 
-
-            **Example JSON**
-
+            **Example JSON**:
+            - Present your findings in a JSON format as shown in the example below, which is delimited by `</example>` tags.
             <example>
-
             {{
             "categories": [
                 {{
@@ -317,15 +297,9 @@ def expand_query_with_llm(query: str,  past_history: List[Dict[str, Any]]) -> st
                 }}
             ]
             }}
-
             </example>
-
-            ---
-
             **Past Purchases**
-
             {past_purchases_entries}
-
             """
 
         response = openai_client.beta.chat.completions.parse(
@@ -340,7 +314,6 @@ def expand_query_with_llm(query: str,  past_history: List[Dict[str, Any]]) -> st
         # Extract the generated text
         expanded_query = response.choices[0].message.content
         logger.info("Query expanded successfully using LLM.")
-        print(expanded_query)
         return expanded_query
 
     except Exception as e:
@@ -379,8 +352,6 @@ def query_qdrant(query: str, category: str, top_k: int = 10) -> List[Dict[str, A
         else:   
             # Generate embeddings for the query
             query_vector = generate_embeddings(query)
-
-            
             # Perform the search with filter
             search_result = qdrant_client.search(
                 collection_name=Config.COLLECTION_NAME,
@@ -414,8 +385,6 @@ def query_qdrant(query: str, category: str, top_k: int = 10) -> List[Dict[str, A
     except Exception as e:
         logger.error(f"Failed to query Qdrant: {e}")
         return []
-    
-
 
 ### Page 2: 
 def get_propensity_recommendations() -> List[Dict[str, Any]]:
@@ -425,7 +394,6 @@ def get_propensity_recommendations() -> List[Dict[str, Any]]:
     :return: A list of recommended product dictionaries.
     """
     logger.info(f"Generating dummy propensity recommendations for user:")
-
 
     # Dummy recommendation pool
     recommended_products = [
@@ -485,14 +453,9 @@ def get_propensity_recommendations() -> List[Dict[str, Any]]:
             "price": 40.84,
             "predicted_score": 0.83
         }
-        ]
-
-
-    
+    ]
     # Filter recommendations based on purchased categories
-   
     logger.info(f"Recommended {len(recommended_products)} products based on past purchases.")
-    
     return recommended_products
 
 def generate_recommendation_explanation(recommended_product: Dict[str, Any], past_purchases: List[Dict[str, Any]]) -> str:
@@ -522,7 +485,6 @@ def generate_recommendation_explanation(recommended_product: Dict[str, Any], pas
     response = openai_client.chat.completions.create(
         model="gpt-4o",
         messages=[{"role":"system","content":prompt}],
-        max_tokens=150,
         temperature=0.7
     )
 

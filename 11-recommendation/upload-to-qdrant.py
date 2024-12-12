@@ -26,8 +26,7 @@ def read_csv_data(csv_file_path: str) -> List[Dict[str, Any]]:
             for row in reader:
                 # Convert data types as necessary
                 row['price'] = float(row['price']) if row['price'] else None
-                 # Parse the embedding vector from string to list of floats
-                embedding_str = row.get('embedded_description')  # Replace 'embedding' with your actual column name
+                embedding_str = row.get('embedded_description')
                 if embedding_str:
                     try:
                         row['embedded_description'] = ast.literal_eval(embedding_str)
@@ -87,7 +86,6 @@ def insert_data_into_qdrant(data_entries: List[Dict[str, Any]]):
             id=idx,
             vector=embedded_description,
             payload={
-                    # Start of Selection
                     "product_id": entry.get("id"),
                     "product_name": entry.get("product_name"),
                     "category": entry.get("category"),

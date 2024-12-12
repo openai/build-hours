@@ -25,7 +25,6 @@ def main():
         st.session_state.search_results = {}
 
     # Load distinct categories and past purchases
-    
     all_past_history = get_past_purchases()
 
     # Display all past purchases in a table at the top
