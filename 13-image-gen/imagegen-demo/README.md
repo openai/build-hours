@@ -1,6 +1,6 @@
-# Frontiers
+# Build Hours
 
-A Next.js application for generating and post-processing images using the OpenAI API. This was used as a Demo Booth for SF Frontiers 2025. 
+A Next.js application for generating and post-processing images using the OpenAI API. This was used for OpenAI SF Frontiers event and repurpused for build hours 
 
 <img width="736" alt="Screenshot 2025-05-15 at 7 58 48 AM" src="https://github.com/user-attachments/assets/7df70f06-fcf1-418a-9ac7-2b4f1125e0fd" />
 
@@ -68,34 +68,6 @@ The production server listens on port 3000 by default.
 
 By default, the server expects an SVG border file at `public/OpenAI_Frontiers-2025.svg`. Replace this file with your own SVG (using the same filename), or update the path in `src/app/api/process/route.ts`.
 
-## API Reference
-
-### POST /api/generate
-
-- Content-Type: `multipart/form-data`
-- Parameters:
-  - `image`: Image file to process.
-  - `modifiers[]`: List of style modifier keys.
-- Response: JSON with generated image data URLs.
-
-### POST /api/stream
-
-- Content-Type: `multipart/form-data`
-- Parameters:
-  - `image`: Image file to process.
-  - `modifier`: Single style modifier key.
-- Response: newline-delimited JSON events with `partial` and `final` image URLs.
-
-### POST /api/process
-
-- Content-Type: `application/json`
-- Body:
-  ```json
-  {
-    "imageData": "data:image/png;base64,..."
-  }
-  ```
-- Response: JSON with processed image data URL including the SVG border.
 
 ## Scripts
 
