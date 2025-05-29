@@ -11,7 +11,6 @@ A Next.js application for generating and post-processing images using the OpenAI
 - Post-process images by overlaying an SVG border using Sharp.
 - Interactive UI for uploading images and downloading results.
 
-- You can find the prompts and sample images here: https://docs.google.com/document/d/19tiXUb0VtOWBabxvanXXxk2js1Ha3aYtMGJpzcDLBFY/edit?tab=t.0
 
 ## Prerequisites
 
@@ -21,11 +20,8 @@ A Next.js application for generating and post-processing images using the OpenAI
 
 ## Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/<your-org>/frontiers.git
-   cd frontiers
-   ```
+1. Clone the repository
+
 2. Install dependencies:
    ```bash
    npm install
