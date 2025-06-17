@@ -26,5 +26,4 @@ For full documentation, guides, and API references, see the official [OpenAI Age
 - You can change examples via the "Scenario" dropdown in the top right.
 
 # Agentic Pattern: Responder-Thinker
-
-[TODO: Add diagram]
+<img width="1011" alt="Screenshot 2025-06-17 at 11 38 42 AM" src="https://github.com/user-attachments/assets/192bbd72-80af-4a76-9db1-aca4bbc8b2a4" />
