@@ -37,11 +37,8 @@ const searchTheWeb = tool({
         tools: [ { type: "web_search_preview" } ],
         tool_choice: "required",
         input: `You're a web search assistant. Search the web and respond with relevant information based on the Search Query given the conversation history.
-          If asked to find inspiration, always include images in your response, so before you respond, make sure to find some images in your search. 
-          This might involve making multiple searches, and then combining the results into a single response.
-          
+
           IMPORTANT: 
-          - Do not make up images on your own.
           - Your response should be in markdown format.
           - Whenever possible, your response should include links to inspiration images, and make sure you use markdown image syntax.
 

@@ -29,7 +29,6 @@ import { customerServiceRetailCompanyName } from "@/app/agentConfigs/customerSer
 import { chatSupervisorCompanyName } from "@/app/agentConfigs/chatSupervisor";
 import { simpleHandoffScenario } from "@/app/agentConfigs/simpleHandoff";
 import { workspaceBuilderScenario } from "@/app/agentConfigs/workspaceBuilder";
-import { workspaceBuilderCompanyName } from "@/app/agentConfigs/workspaceBuilder";
 
 // Map used by connect logic for scenarios defined via the SDK.
 const sdkScenarioMap: Record<string, RealtimeAgent[]> = {
