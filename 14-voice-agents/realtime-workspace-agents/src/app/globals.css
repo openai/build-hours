@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #fafafa;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
+
+/* ───────────────────────────────
+   Markdown content styling
+   Applied to elements wrapped in .markdown-body
+   ─────────────────────────────── */
+
+   .markdown-body h1 {@apply text-2xl font-bold mt-4 mb-2;}
+   .markdown-body h2 {@apply text-xl font-semibold mt-3 mb-2;}
+   .markdown-body h3 {@apply text-lg font-semibold mt-3 mb-2;}
+   .markdown-body p {@apply mb-2;}
+   .markdown-body ul {@apply list-disc pl-6 mb-2;}
+   .markdown-body ol {@apply list-decimal pl-6 mb-2;}
+   .markdown-body li {@apply mb-1;}
+   .markdown-body strong {@apply font-bold;}
+   .markdown-body em {@apply italic;}
+   .markdown-body pre {@apply bg-neutral-100 dark:bg-neutral-800 p-2 rounded text-xs overflow-x-auto;}
+   .markdown-body img {@apply max-w-full h-auto rounded-md my-2;}
+   
+   
