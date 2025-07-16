@@ -1,0 +1,30 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+
+# Project evaluation runs
+projects/*/eval_runs/
+
+# Project data files
+projects/*/data/
+!projects/toy/data/
+
+# Environment configuration files
+projects/*/.env
+
+# Ignore all projects except toy
+projects/*
+!projects/toy/
+!projects/build_hour/
+projects/build_hour/eval_runs_*/
+projects/build_hour/data/dev*
+
+# OS and editor files
+.DS_Store
+*.swp
+*.swo
