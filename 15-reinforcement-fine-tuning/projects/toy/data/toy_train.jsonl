@@ -1,0 +1,2 @@
+{"item": {"id": "1", "text_input": "I love this product!", "reference_answer": "Positive"}}
+{"item": {"id": "2", "text_input": "This is terrible.", "reference_answer": "Negative"}}

@@ -1,0 +1,7 @@
+{
+  "evaluation_metric": "fuzzy_match",
+  "input": "{{ sample.output_json.sentiment }}",
+  "name": "sentiment_similarity",
+  "reference": "{{ item.reference_answer }}",
+  "type": "text_similarity"
+}
