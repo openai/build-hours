@@ -9,11 +9,11 @@ import Image from "next/image";
 import Transcript from "./components/Transcript";
 import Events from "./components/Events";
 import BottomToolbar from "./components/BottomToolbar";
-import Workspace from "./components/Workspace";
+// Removed Workspace import (no longer used)
 
 // Types
 import { SessionStatus } from "@/app/types";
-import type { RealtimeAgent, RealtimeOutputGuardrail } from '@openai/agents/realtime';
+import type { RealtimeAgent } from '@openai/agents/realtime';
 
 // Context providers & hooks
 import { useTranscript } from "@/app/contexts/TranscriptContext";
@@ -23,28 +23,40 @@ import { createModerationGuardrail } from "@/app/agentConfigs/guardrails";
 
 // Agent configs
 import { allAgentSets, defaultAgentSetKey } from "@/app/agentConfigs";
-import { customerServiceRetailScenario } from "@/app/agentConfigs/customerServiceRetail";
-import { chatSupervisorScenario } from "@/app/agentConfigs/chatSupervisor";
-import { customerServiceRetailCompanyName } from "@/app/agentConfigs/customerServiceRetail";
-import { chatSupervisorCompanyName } from "@/app/agentConfigs/chatSupervisor";
-import { simpleHandoffScenario } from "@/app/agentConfigs/simpleHandoff";
-import { workspaceBuilderScenario } from "@/app/agentConfigs/workspaceBuilder";
+// Removed unused scenario imports
+import { realEstateBrokerScenario, realEstateCompanyName } from "@/app/agentConfigs/realEstateBroker";
 
-// Map used by connect logic for scenarios defined via the SDK.
+// Map used by connect logic for scenarios defined via the SDK (single scenario now)
 const sdkScenarioMap: Record<string, RealtimeAgent[]> = {
-  workspaceBuilder: workspaceBuilderScenario,
-  customerServiceRetail: customerServiceRetailScenario,
-  chatSupervisor: chatSupervisorScenario,
-  simpleHandoff: simpleHandoffScenario,
+  realEstateBroker: realEstateBrokerScenario,
 };
 
 import useAudioDownload from "./hooks/useAudioDownload";
 import { useHandleSessionHistory } from "./hooks/useHandleSessionHistory";
-import { create } from "domain";
-import { createDesignGuardrail } from "./agentConfigs/workspaceBuilder/guardrails";
+// Removed unused import from 'domain' and legacy design guardrail; see guardrails.ts for createResearchGuardrail if needed.
+// import { createResearchGuardrail } from "./agentConfigs/workspaceBuilder/guardrails";
+
+// Versioning for workspace localStorage. If user has an older (e.g., interior remodel) workspaceState, reset when entering the investment research scenario.
+const WORKSPACE_VERSION_KEY = 'workspace_version';
+const MEDICAL_RESEARCH_VERSION = 'medical_research_v1';
 
 function App() {
   const searchParams = useSearchParams()!;
+
+  // One-time migration: when scenario is workspaceBuilder (investment research) ensure workspace state is versioned.
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const scenario = (new URL(window.location.href).searchParams.get('agentConfig')) || '';
+    if (scenario !== 'medicalResearch') return;
+    const currentVersion = window.localStorage.getItem(WORKSPACE_VERSION_KEY);
+    if (currentVersion !== MEDICAL_RESEARCH_VERSION) {
+      // Drop legacy workspace content (interior remodeling, etc.) so the research builder can start fresh.
+      window.localStorage.removeItem('workspaceState');
+      window.localStorage.setItem(WORKSPACE_VERSION_KEY, MEDICAL_RESEARCH_VERSION);
+      // Force reload so WorkspaceContext initializes cleanly.
+      window.location.reload();
+    }
+  }, []);
 
   // ---------------------------------------------------------------------
   // Codec selector – lets you toggle between wide-band Opus (48 kHz)
@@ -139,18 +151,16 @@ function App() {
   useHandleSessionHistory();
 
   useEffect(() => {
+    // Single scenario bootstrap (ignore query param except to normalize)
     let finalAgentConfig = searchParams.get("agentConfig");
-    if (!finalAgentConfig || !allAgentSets[finalAgentConfig]) {
+    if (finalAgentConfig !== 'realEstateBroker') {
       finalAgentConfig = defaultAgentSetKey;
       const url = new URL(window.location.toString());
       url.searchParams.set("agentConfig", finalAgentConfig);
-      window.location.replace(url.toString());
-      return;
+      window.history.replaceState({}, '', url.toString());
     }
-
     const agents = allAgentSets[finalAgentConfig];
     const agentKeyToUse = agents[0]?.name || "";
-
     setSelectedAgentName(agentKeyToUse);
     setSelectedAgentConfigSet(agents);
   }, [searchParams]);
@@ -217,18 +227,7 @@ function App() {
           reorderedAgents.unshift(agent);
         }
 
-        let guardrails = undefined;
-        switch (agentSetKey) {
-          case 'customerServiceRetail':
-            guardrails = [createModerationGuardrail(customerServiceRetailCompanyName)];
-            break;
-          case 'chatSupervisor':
-            guardrails = [createModerationGuardrail(chatSupervisorCompanyName)];
-            break;
-          case 'workspaceBuilder':
-            // guardrails = [createDesignGuardrail()];
-            break;
-        }
+        const guardrails = [createModerationGuardrail(realEstateCompanyName)];
 
         await connect({
           getEphemeralKey: async () => EPHEMERAL_KEY,
@@ -337,23 +336,7 @@ function App() {
     }
   };
 
-  const handleAgentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newAgentConfig = e.target.value;
-    const url = new URL(window.location.toString());
-    url.searchParams.set("agentConfig", newAgentConfig);
-    window.location.replace(url.toString());
-  };
-
-  const handleSelectedAgentChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const newAgentName = e.target.value;
-    // Reconnect session with the newly selected agent as root so that tool
-    // execution works correctly.
-    disconnectFromRealtime();
-    setSelectedAgentName(newAgentName);
-    // connectToRealtime will be triggered by effect watching selectedAgentName
-  };
+  // Removed scenario & agent change handlers (single-agent app)
 
   // Because we need a new connection, refresh the page when codec changes
   const handleCodecChange = (newCodec: string) => {
@@ -442,18 +425,16 @@ function App() {
     };
   }, [sessionStatus]);
 
-  const agentSetKey = searchParams.get("agentConfig") || "default";
+  // Single-agent app; no scenario key needed
 
   const [isTranscriptVisible, setIsTranscriptVisible] = useState(true);
 
   useEffect(() => {
-    // Only run on client
     const stored = localStorage.getItem('transcriptVisible');
     if (stored !== null) {
       setIsTranscriptVisible(stored === 'true');
     } else {
-      const agentSetKey = (new URL(window.location.href).searchParams.get('agentConfig') || 'default');
-      setIsTranscriptVisible(agentSetKey !== 'workspaceBuilder');
+      setIsTranscriptVisible(true);
     }
   }, []);
 
@@ -478,74 +459,14 @@ function App() {
             />
           </div>
           <div>
-            Realtime API <span className="text-gray-500">Agents</span>
+            {realEstateCompanyName} <span className="text-gray-500">Agent</span>
           </div>
         </div>
-        <div className="flex items-center">
-          <label className="flex items-center text-base gap-1 mr-2 font-medium">
-            Scenario
-          </label>
-          <div className="relative inline-block">
-            <select
-              value={agentSetKey}
-              onChange={handleAgentChange}
-              className="appearance-none border border-gray-300 rounded-lg text-base px-2 py-1 pr-8 cursor-pointer font-normal focus:outline-none"
-            >
-              {Object.keys(allAgentSets).map((agentKey) => (
-                <option key={agentKey} value={agentKey}>
-                  {agentKey}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-600">
-              <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                <path
-                  fillRule="evenodd"
-                  d="M5.23 7.21a.75.75 0 011.06.02L10 10.44l3.71-3.21a.75.75 0 111.04 1.08l-4.25 3.65a.75.75 0 01-1.04 0L5.21 8.27a.75.75 0 01.02-1.06z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-          </div>
-
-          {agentSetKey && (
-            <div className="flex items-center ml-6">
-              <label className="flex items-center text-base gap-1 mr-2 font-medium">
-                Agent
-              </label>
-              <div className="relative inline-block">
-                <select
-                  value={selectedAgentName}
-                  onChange={handleSelectedAgentChange}
-                  className="appearance-none border border-gray-300 rounded-lg text-base px-2 py-1 pr-8 cursor-pointer font-normal focus:outline-none"
-                >
-                  {selectedAgentConfigSet?.map((agent) => (
-                    <option key={agent.name} value={agent.name}>
-                      {agent.name}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-600">
-                  <svg
-                    className="h-4 w-4"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.23 7.21a.75.75 0 011.06.02L10 10.44l3.71-3.21a.75.75 0 111.04 1.08l-4.25 3.65a.75.75 0 01-1.04 0L5.21 8.27a.75.75 0 01.02-1.06z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* Removed scenario & agent dropdowns for single-agent app */}
       </div>
 
       <div className="flex flex-1 gap-2 px-2 overflow-hidden relative">
-        {agentSetKey === "workspaceBuilder" && <Workspace />}
+        {/* Removed Workspace component (previously for other scenarios) */}
         <Transcript
           userText={userText}
           setUserText={setUserText}

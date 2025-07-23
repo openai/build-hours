@@ -1,16 +1,9 @@
-import { simpleHandoffScenario } from './simpleHandoff';
-import { customerServiceRetailScenario } from './customerServiceRetail';
-import { chatSupervisorScenario } from './chatSupervisor';
-import { workspaceBuilderScenario } from './workspaceBuilder';
-
+import { realEstateBrokerScenario } from './realEstateBroker';
 import type { RealtimeAgent } from '@openai/agents/realtime';
 
-// Map of scenario key -> array of RealtimeAgent objects
+// Map of scenario key -> array of RealtimeAgent objects (single scenario after refactor)
 export const allAgentSets: Record<string, RealtimeAgent[]> = {
-  workspaceBuilder: workspaceBuilderScenario,
-  customerServiceRetail: customerServiceRetailScenario,
-  chatSupervisor: chatSupervisorScenario,
-  simpleHandoff: simpleHandoffScenario,  
+  realEstateBroker: realEstateBrokerScenario,
 };
 
-export const defaultAgentSetKey = 'workspaceBuilder';
+export const defaultAgentSetKey = 'realEstateBroker';
