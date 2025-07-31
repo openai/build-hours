@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Total Revenue",
+    "value": "$1,250.00",
+    "description": "Visitors for the last 6 months"
+  },
+  {
+    "title": "New Customers",
+    "value": "1,234",
+    "description": "New customers this month"
+  },
+  {
+    "title": "Active Accounts",
+    "value": "45,678",
+    "description": "Active accounts this month"
+  },
+  {
+    "title": "Growth Rate",
+    "value": "4.5%",
+    "description": "Meets growth projections"
+  }
+]
