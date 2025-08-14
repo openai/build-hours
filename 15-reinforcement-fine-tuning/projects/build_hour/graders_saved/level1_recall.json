@@ -1,0 +1,7 @@
+{
+  "type": "python",
+  "name": "level1_recall",
+  "source": "\ndef grade(sample, item) -> float:\n    pred_list = (sample or {}).get(\"output_json\", {}).get(\"level1\", [])\n    if not isinstance(pred_list, list):\n        return 0.0\n    pred_set = {d.get(\"code\") for d in pred_list if isinstance(d, dict) and d.get(\"code\")}\n\n    ref_set = set(item[\"reference_answer\"])\n    if not ref_set:\n        return 0.0\n    inter = len(pred_set & ref_set)\n    return inter / len(ref_set)\n",
+  "image_tag": "2025-05-08",
+  "pass_threshold": 0.8
+}

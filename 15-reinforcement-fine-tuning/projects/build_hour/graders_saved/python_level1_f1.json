@@ -1,0 +1,7 @@
+{
+  "name": "python_level1_f1",
+  "source": "\ndef f1_score(pred, ref) -> float:\n    if not pred or not ref:\n        return 0.0\n    inter = len(pred & ref)\n    precision = inter / len(pred)\n    recall = inter / len(ref)\n    return 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0\n\n\ndef normalise(label: str) -> str:\n    # Lowercase & strip for comparison\n    return label.lower().strip()\n\n\ndef grade(sample, item) -> float:\n    pred_list = sample[\"output_json\"][\"level1\"]\n    ref_list = item[\"reference_answer\"]\n\n    pred_set = {normalise(x) for x in pred_list}\n    ref_set = {normalise(x) for x in ref_list}\n\n    return f1_score(pred_set, ref_set)\n",
+  "type": "python",
+  "image_tag": "2025-05-08",
+  "pass_threshold": 1.0
+}
