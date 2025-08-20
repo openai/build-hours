@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#2563EB" />
+  <title>FlowPilot — Automate workflows without code</title>
+  <style>
+    :root{
+      /* Colors */
+      --primary:#2563EB;
+      --primary-hover:#1D4ED8; /* ~10% darker */
+      --secondary:#10B981;
+      --text:#374151;
+      --muted:#6B7280;
+      --bg:#FFFFFF;
+      --surface:#FFFFFF;
+      --border:#E5E7EB;
+      --accent-bg:#F9FAFB;
+
+      /* Typography */
+      --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      --fs-body:1rem;
+      --fs-h1:2.5rem;
+      --fs-h2:1.75rem;
+      --fs-h3:1.25rem;
+      --lh:1.55;
+
+      /* Spacing (4px baseline) */
+      --space-1:4px;
+      --space-2:8px;
+      --space-3:12px;
+      --space-4:16px;
+      --space-5:20px;
+      --space-6:24px;
+      --space-8:32px;
+      --space-10:40px;
+      --space-12:48px;
+      --space-16:64px;
+      --radius:12px;
+      --radius-sm:8px;
+      --radius-lg:18px;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.06);
+      --shadow-md:0 6px 20px rgba(0,0,0,.08);
+      --shadow-lg:0 16px 40px rgba(0,0,0,.10);
+      --transition: all .25s ease;
+      --section-gap: clamp(56px, 8vw, 96px);
+      --maxw: 1120px;
+      --focus: 0 0 0 3px rgba(37,99,235,.35);
+    }
+
+    /* Base */
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:var(--font-sans);
+      font-size:var(--fs-body);
+      line-height:var(--lh);
+      color:var(--text);
+      background:var(--bg);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    img, svg{display:block; max-width:100%}
+    a{color:inherit; text-decoration:none}
+    button{font:inherit}
+    .container{width:min(var(--maxw), calc(100% - 2rem)); margin-inline:auto}
+    .section{padding-block: var(--section-gap)}
+    .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
+    .skip-link{position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden}
+    .skip-link:focus{left:16px; top:16px; width:auto; height:auto; padding:10px 14px; background:#111; color:#fff; border-radius:8px; z-index:9999}
+
+    h1,h2,h3{margin:0 0 var(--space-4)}
+    h1{font-size:var(--fs-h1); letter-spacing:-.02em}
+    h2{font-size:var(--fs-h2); letter-spacing:-.01em}
+    h3{font-size:var(--fs-h3)}
+    p{margin:0 0 var(--space-4); color:var(--muted)}
+
+    /* Focus visible */
+    :where(a, button, [role="button"], summary, input, details){outline:none}
+    :where(a, button, [role="button"], summary, input, details):focus-visible{box-shadow:var(--focus); border-radius:8px}
+
+    /* Sticky Nav */
+    header{
+      position:sticky; top:0; z-index:50; backdrop-filter:saturate(1.4) blur(6px);
+      background: rgba(255,255,255,.85); border-bottom:1px solid var(--border)
+    }
+    .nav{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 0;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.2px;
+    }
+    .brand svg{width:28px; height:28px}
+    .nav-links{
+      display:flex; align-items:center; gap:18px;
+    }
+    .nav-links a{
+      padding:8px 10px; border-radius:8px; color:#111827;
+    }
+    .nav-links a:hover{background:#f3f4f6}
+    .hamburger{
+      display:inline-flex; align-items:center; justify-content:center;
+      width:40px; height:40px; border-radius:10px; border:1px solid var(--border);
+      background:#fff; cursor:pointer; transition:var(--transition)
+    }
+    .hamburger:hover{background:#f9fafb}
+    .hamburger span{
+      position:relative; width:20px; height:2px; background:#111827; border-radius:2px; transition:var(--transition)
+    }
+    .hamburger span::before,.hamburger span::after{
+      content:""; position:absolute; left:0; width:20px; height:2px; background:#111827; border-radius:2px; transition:var(--transition)
+    }
+    .hamburger span::before{top:-6px}
+    .hamburger span::after{top:6px}
+    .hamburger[aria-expanded="true"] span{background:transparent}
+    .hamburger[aria-expanded="true"] span::before{transform:translateY(6px) rotate(45deg)}
+    .hamburger[aria-expanded="true"] span::after{transform:translateY(-6px) rotate(-45deg)}
+
+    /* Mobile menu */
+    .mobile-panel{
+      display:none; padding:10px 0 16px; border-top:1px solid var(--border);
+    }
+    .mobile-panel a{display:block; padding:10px 8px; border-radius:10px}
+    .mobile-panel a:hover{background:#f3f4f6}
+
+    /* Hero */
+    .hero{
+      position:relative; overflow:hidden; color:#0b1220;
+      background:
+        radial-gradient(1200px 400px at 10% -10%, rgba(37,99,235,.18), transparent 60%),
+        radial-gradient(1000px 400px at 90% -20%, rgba(16,185,129,.14), transparent 60%),
+        linear-gradient(180deg, #ffffff, #ffffff);
+      border-bottom:1px solid var(--border);
+    }
+    .hero-inner{
+      display:grid; gap:20px; align-items:center; padding-block: clamp(56px, 10vw, 120px);
+      text-align:center;
+    }
+    .hero h1{font-weight:800}
+    .hero p{font-size:1.125rem}
+    .hero-cta{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:8px}
+
+    /* Buttons */
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      gap:8px; padding:12px 18px; border-radius:999px; border:2px solid transparent;
+      font-weight:700; letter-spacing:.2px; cursor:pointer; transition:var(--transition)
+    }
+    .btn-primary{background:var(--primary); color:#fff}
+    .btn-primary:hover{background:var(--primary-hover)}
+    .btn-outline{background:#fff; color:var(--primary); border-color:var(--primary)}
+    .btn-outline:hover{background:#EFF6FF}
+    .btn-secondary{
+      background:transparent; color:#fff; border-color:#fff;
+    }
+    .btn-secondary:hover{background:rgba(255,255,255,.1)}
+    .btn-block{width:100%}
+    .badge{
+      display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px;
+      background:#EEF2FF; color:#3730A3; font-weight:700; font-size:.8125rem;
+    }
+
+    /* Cards */
+    .card{
+      background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+      box-shadow:var(--shadow-sm); transition:var(--transition)
+    }
+    .card:hover{box-shadow:var(--shadow-md); transform:translateY(-3px); border-color:#d1d5db}
+
+    /* Features */
+    .features-grid{
+      display:grid; gap:16px;
+      grid-template-columns:1fr;
+    }
+    .feature{padding:20px}
+    .feature h3{margin-top:8px; margin-bottom:6px}
+    .feature p{margin:0}
+    .feature-icon{
+      width:40px; height:40px; border-radius:10px; display:grid; place-items:center;
+      background:#EEF2FF; color:var(--primary)
+    }
+
+    /* Pricing */
+    .pricing-grid{
+      display:grid; gap:16px; grid-template-columns:1fr;
+    }
+    .price-card{padding:22px; position:relative}
+    .price-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px}
+    .price h3{margin:0 0 4px}
+    .price .amount{font-size:2rem; font-weight:800; color:#111827}
+    .price .per{color:var(--muted); font-size:.95rem}
+    .feature-list{margin:14px 0 18px; padding:0; list-style:none; display:grid; gap:8px}
+    .feature-list li{display:flex; gap:10px; align-items:flex-start}
+    .feature-list svg{flex:0 0 18px; margin-top:2px}
+
+    .popular{
+      border-color:#c7d2fe; box-shadow:0 0 0 3px #eef2ff inset, var(--shadow-md);
+    }
+    .popular .popular-badge{
+      position:absolute; top:-12px; right:16px;
+      background:#1E293B; color:#fff; font-size:.75rem; font-weight:800;
+      padding:6px 10px; border-radius:999px; letter-spacing:.3px; box-shadow:var(--shadow-sm)
+    }
+
+    /* Testimonials */
+    .testimonials-grid{
+      display:grid; gap:16px; grid-template-columns:1fr;
+    }
+    .testimonial{padding:20px}
+    .quote{font-style:italic; color:#111827}
+    .person{display:flex; align-items:center; gap:12px; margin-top:12px}
+    .avatar{
+      width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#e0e7ff,#f0fdf4);
+      display:grid; place-items:center; font-weight:800; color:#1F2937;
+      border:1px solid var(--border)
+    }
+    .role{color:var(--muted); font-size:.95rem}
+
+    /* FAQ */
+    details{border:1px solid var(--border); border-radius:var(--radius-sm); background:#fff; padding:10px 14px}
+    details + details{margin-top:10px}
+    summary{
+      list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:10px;
+      font-weight:700; color:#111827
+    }
+    summary::-webkit-details-marker{display:none}
+    .faq-answer{padding-top:8px; color:var(--muted)}
+    .chevron{transition:transform .25s ease}
+    details[open] .chevron{transform:rotate(180deg)}
+
+    /* Footer */
+    footer{background:#0B1220; color:#E5E7EB}
+    .footer-cta{display:grid; gap:14px; justify-items:center; text-align:center; padding-block: var(--section-gap)}
+    .footer-legal{
+      border-top:1px solid rgba(255,255,255,.1);
+      padding:18px 0; font-size:.95rem; color:#CBD5E1;
+    }
+    .footer-legal .links{display:flex; gap:16px; flex-wrap:wrap}
+    .footer-legal a{color:#E5E7EB}
+    .footer-legal a:hover{text-decoration:underline}
+
+    /* Hero animation */
+    @keyframes fadeUp {
+      from {opacity:0; transform:translateY(10px)}
+      to {opacity:1; transform:translateY(0)}
+    }
+    .fade-in{animation:fadeUp .3s ease both}
+
+    /* Section anchors offset (for sticky header) */
+    section, footer{scroll-margin-top:80px}
+
+    /* Responsive */
+    @media (min-width:640px){
+      .hero-inner{text-align:left; grid-template-columns:1.2fr 1fr}
+      .hero-cta{justify-content:flex-start}
+      .features-grid{grid-template-columns: repeat(2, 1fr)}
+      .testimonials-grid{grid-template-columns: repeat(2, 1fr)}
+      .pricing-grid{grid-template-columns: repeat(2, 1fr)}
+      .mobile-hide{display:block}
+      .mobile-only{display:none}
+    }
+    @media (min-width:1024px){
+      .features-grid{grid-template-columns: repeat(4, 1fr)}
+      .testimonials-grid{grid-template-columns: repeat(3, 1fr)}
+      .pricing-grid{grid-template-columns: repeat(3, 1fr)}
+    }
+
+    /* Hide/show nav groups */
+    .desktop-nav{display:none}
+    @media (min-width:640px){ .desktop-nav{display:flex} .hamburger{display:none} }
+    .mobile-panel.open{display:block}
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <header>
+    <div class="container nav" role="navigation" aria-label="Main">
+      <a href="#" class="brand" aria-label="FlowPilot home">
+        <svg role="img" aria-label="FlowPilot Logo" viewBox="0 0 48 48" width="28" height="28">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#2563EB"/>
+              <stop offset="100%" stop-color="#10B981"/>
+            </linearGradient>
+          </defs>
+          <rect x="4" y="4" width="40" height="40" rx="12" fill="url(#g)"/>
+          <path d="M14 26h8a6 6 0 0 0 6-6v-2M34 22h-8a6 6 0 0 0-6 6v2" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <span>FlowPilot</span>
+      </a>
+
+      <nav class="nav-links desktop-nav" aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#contact">Contact</a>
+        <a href="#pricing" class="btn btn-outline" style="margin-left:6px">Start Free</a>
+      </nav>
+
+      <button class="hamburger mobile-only" aria-controls="mobile-menu" aria-expanded="false" aria-label="Open menu">
+        <span></span>
+      </button>
+    </div>
+    <div id="mobile-menu" class="container mobile-panel mobile-only" aria-label="Mobile">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
+      <div style="padding-top:8px">
+        <a class="btn btn-primary btn-block" href="#pricing">Start Free</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero" aria-label="Hero">
+      <div class="container hero-inner">
+        <div class="fade-in">
+          <span class="badge" aria-label="New features">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24">
+              <path d="M12 2l2.39 4.84L20 8.27l-3.9 3.8L17.5 18 12 15.27 6.5 18l1.4-5.93L4 8.27l5.61-1.43L12 2z" fill="currentColor"/>
+            </svg>
+            Shipping faster with AI assistance
+          </span>
+          <h1>Automate workflows and scale without code</h1>
+          <p>Connect tools, trigger actions, and track outcomes in one powerful platform.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#pricing" aria-label="Start free trial">
+              Start Free Trial
+            </a>
+            <a class="btn btn-secondary" href="#pricing" aria-label="View pricing">
+              View Pricing
+            </a>
+          </div>
+        </div>
+        <div aria-hidden="true">
+          <div class="card" style="padding:18px">
+            <h3 style="margin-bottom:10px">Flow snapshot</h3>
+            <svg viewBox="0 0 560 340" width="100%" height="auto" aria-hidden="true">
+              <rect x="0" y="0" width="560" height="340" rx="14" fill="#F8FAFC" stroke="#E5E7EB"/>
+              <rect x="36" y="36" width="140" height="66" rx="10" fill="#EEF2FF" stroke="#C7D2FE"/>
+              <text x="50" y="74" font-family="var(--font-sans)" font-size="16" fill="#1F2937">New signup</text>
+
+              <rect x="220" y="36" width="140" height="66" rx="10" fill="#ECFDF5" stroke="#A7F3D0"/>
+              <text x="234" y="74" font-family="var(--font-sans)" font-size="16" fill="#065F46">Validate email</text>
+
+              <rect x="404" y="36" width="120" height="66" rx="10" fill="#DBEAFE" stroke="#93C5FD"/>
+              <text x="418" y="74" font-family="var(--font-sans)" font-size="16" fill="#1E3A8A">Welcome</text>
+
+              <rect x="180" y="170" width="180" height="66" rx="10" fill="#FEF3C7" stroke="#FCD34D"/>
+              <text x="194" y="208" font-family="var(--font-sans)" font-size="16" fill="#78350F">Tag as trial</text>
+
+              <path d="M176 69h38M360 69h38M280 102v60" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="176" cy="69" r="4" fill="#94A3B8"/>
+              <circle cx="360" cy="69" r="4" fill="#94A3B8"/>
+              <circle cx="280" cy="102" r="4" fill="#94A3B8"/>
+
+              <rect x="404" y="170" width="120" height="66" rx="10" fill="#F1F5F9" stroke="#E5E7EB"/>
+              <text x="418" y="208" font-family="var(--font-sans)" font-size="16" fill="#1F2937">Notify CRM</text>
+              <path d="M360 69C410 120 420 170 420 170" stroke="#94A3B8" stroke-width="3" fill="none"/>
+              <path d="M360 69C310 120 260 170 260 170" stroke="#94A3B8" stroke-width="3" fill="none"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="section" aria-label="Features">
+      <div class="container">
+        <h2>Build, connect, and optimize with ease</h2>
+        <p>Everything you need to design reliable automations across your stack.</p>
+
+        <div class="features-grid" style="margin-top:16px">
+          <article class="card feature">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 7h8v4H4zM12 13h8v4h-8z" fill="currentColor"/>
+                <path d="M12 9h4a4 4 0 0 1 4 4v0" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Visual Workflow Builder</h3>
+            <p>Drag, drop, and publish flows without writing a single line of code.</p>
+          </article>
+
+          <article class="card feature">
+            <div class="feature-icon" aria-hidden="true" style="background:#ECFDF5; color:#059669">
+              <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M13 2v9l7 3-7 3v9" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <circle cx="6" cy="12" r="3" fill="currentColor"/>
+              </svg>
+            </div>
+            <h3>Real‑time Integrations</h3>
+            <p>Connect to 200+ apps and sync data instantly using secure APIs.</p>
+          </article>
+
+          <article class="card feature">
+            <div class="feature-icon" aria-hidden="true" style="background:#FFFBEB; color:#D97706">
+              <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3v6M5 13h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="12" cy="17" r="4" fill="currentColor" opacity=".15"/>
+              </svg>
+            </div>
+            <h3>Smart Triggers</h3>
+            <p>Launch actions from webhooks, schedules, or events in your database.</p>
+          </article>
+
+          <article class="card feature">
+            <div class="feature-icon" aria-hidden="true" style="background:#E0E7FF; color:#4338CA">
+              <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 18V6l6 6 6-4 4 2v8z" fill="currentColor"/>
+              </svg>
+            </div>
+            <h3>Analytics Dashboard</h3>
+            <p>Track run rates, failures, and time saved with real‑time insights.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="section" aria-label="Pricing">
+      <div class="container">
+        <h2>Simple, transparent pricing</h2>
+        <p>Start free and upgrade when you’re ready.</p>
+
+        <div class="pricing-grid" style="margin-top:16px">
+          <!-- Basic -->
+          <article class="card price-card">
+            <div class="price-header">
+              <h3>Basic</h3>
+            </div>
+            <div class="price">
+              <div class="amount">$0</div>
+              <div class="per">per month</div>
+            </div>
+            <ul class="feature-list" aria-label="Basic plan features">
+              <li>
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path fill="#10B981" d="M9.5 16.5l-4-4 1.5-1.5 2.5 2.5 6-6L17 9l-7.5 7.5z"/></svg>
+                <span>1,000 runs / month</span>
+              </li>
+              <li>
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path fill="#10B981" d="M9.5 16.5l-4-4 1.5-1.5 2.5 2.5 6-6L17 9l-7.5 7.5z"/></svg>
+                <span>10 workflows</span>
+              </li>
+              <li>
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path fill="#10B981" d="M9.5 16.5l-4-4 1.5-1.5 2.5 2.5 6-6L17 9l-7.5 7.5z"/></svg>
+                <span>Email support</span>
+              </li>
+            </ul>
+            <a class="btn btn-outline btn-block" href="#" aria-label="Choose Basic plan">Choose Basic</a>
+          </article>
+
+          <!-- Pro -->
+          <article class="card price-card popular" aria-label="Most popular plan">
+            <div class="popular-badge" aria-hidden="true">Most Popular</div>
+            <div class="price-header">
+              <h3>Pro</h3>
+              <span class="badge" style="background:#DCFCE7; color:#065F46">Save 20%</span>
+            </div>
+            <div class="price">
+              <div class="amount">$29</div>
+              <div class="per">per month</div>
+            </div>
+            <ul class="feature-list" aria-label="Pro plan features">
+              <li>
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path fill="#10B981" d="M9.5 16.5l-4-4 1.5-1.5 2.5 2.5 6-6L17 9l-7.5 7.5z"/></svg>
+                <span>50,000 runs / month</span>
+              </li>
+              <li>
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path fill="#10B981" d="M9.5 16.5l-4-4 1.5-1.5 2.5 2.5 6-6L17 9l-7.5 7.5z"/></svg>
+                <span>Unlimited workflows</span>
+              </li>
+              <li>
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path fill="#10B981" d="M9.5 16.5l-4-4 1.5-1.5 2.5 2.5 6-6L17 9l-7.5 7.5z"/></svg>
+                <span>Team collaboration</span>
+              </li>
+              <li>
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path fill="#10B981" d="M9.5 16.5l-4-4 1.5-1.5 2.5 2.5 6-6L17 9l-7.5 7.5z"/></svg>
+                <span>Priority support</span>
+              </li>
+            </ul>
+            <a class="btn btn-primary btn-block" href="#" aria-label="Choose Pro plan">Choose Pro</a>
+          </article>
+
+          <!-- Enterprise -->
+          <article class="card price-card">
+            <div class="price-header">
+              <h3>Enterprise</h3>
+            </div>
+            <div class="price">
+              <div class="amount">$99</div>
+              <div class="per">per month</div>
+            </div>
+            <ul class="feature-list" aria-label="Enterprise plan features">
+              <li>
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path fill="#10B981" d="M9.5 16.5l-4-4 1.5-1.5 2.5 2.5 6-6L17 9l-7.5 7.5z"/></svg>
+                <span>Custom run limits</span>
+              </li>
+              <li>
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path fill="#10B981" d="M9.5 16.5l-4-4 1.5-1.5 2.5 2.5 6-6L17 9l-7.5 7.5z"/></svg>
+                <span>SSO/SAML</span>
+              </li>
+              <li>
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path fill="#10B981" d="M9.5 16.5l-4-4 1.5-1.5 2.5 2.5 6-6L17 9l-7.5 7.5z"/></svg>
+                <span>Dedicated success manager</span>
+              </li>
+              <li>
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path fill="#10B981" d="M9.5 16.5l-4-4 1.5-1.5 2.5 2.5 6-6L17 9l-7.5 7.5z"/></svg>
+                <span>99.9% SLA</span>
+              </li>
+            </ul>
+            <a class="btn btn-outline btn-block" href="#" aria-label="Contact sales for Enterprise">Contact Sales</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section" aria-label="Testimonials">
+      <div class="container">
+        <h2>Loved by fast‑moving teams</h2>
+        <p>See how customers ship more with FlowPilot.</p>
+
+        <div class="testimonials-grid" style="margin-top:16px">
+          <article class="card testimonial" aria-label="Testimonial from Alex Rivera">
+            <div class="quote">“We replaced three internal scripts and saved 12 hours a week. It just works.”</div>
+            <div class="person">
+              <div class="avatar" role="img" aria-label="Alex Rivera avatar">AR</div>
+              <div>
+                <div style="font-weight:700; color:#111827">Alex Rivera</div>
+                <div class="role">Ops Lead, Finchly</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="card testimonial" aria-label="Testimonial from Priya Nair">
+            <div class="quote">“The visual builder is the best I’ve used. Our onboarding is fully automated.”</div>
+            <div class="person">
+              <div class="avatar" role="img" aria-label="Priya Nair avatar">PN</div>
+              <div>
+                <div style="font-weight:700; color:#111827">Priya Nair</div>
+                <div class="role">Head of Product, Lumio</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="card testimonial" aria-label="Testimonial from Jordan Lee">
+            <div class="quote">“From webhook to insight in minutes. The analytics made upgrades a no‑brainer.”</div>
+            <div class="person">
+              <div class="avatar" role="img" aria-label="Jordan Lee avatar">JL</div>
+              <div>
+                <div style="font-weight:700; color:#111827">Jordan Lee</div>
+                <div class="role">CTO, Cadence</div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" aria-label="FAQ">
+      <div class="container">
+        <h2>Frequently asked questions</h2>
+        <p>Quick answers to common questions.</p>
+
+        <div style="margin-top:16px">
+          <details>
+            <summary>
+              How does the free trial work?
+              <svg class="chevron" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24">
+                <path d="M6 9l6 6 6-6" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </summary>
+            <div class="faq-answer">Create an account and get full Pro features free for 14 days—no credit card required.</div>
+          </details>
+
+          <details>
+            <summary>
+              Can I cancel anytime?
+              <svg class="chevron" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24">
+                <path d="M6 9l6 6 6-6" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </summary>
+            <div class="faq-answer">Yes. Cancel with one click from your billing page—your plan stays active until the end of the period.</div>
+          </details>
+
+          <details>
+            <summary>
+              Do you offer startup or nonprofit discounts?
+              <svg class="chevron" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24">
+                <path d="M6 9l6 6 6-6" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </summary>
+            <div class="faq-answer">We do. Contact us and we’ll share available programs based on your stage and needs.</div>
+          </details>
+
+          <details>
+            <summary>
+              Is my data secure?
+              <svg class="chevron" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24">
+                <path d="M6 9l6 6 6-6" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </summary>
+            <div class="faq-answer">We use encryption in transit and at rest, offer SSO/SAML, and undergo regular security reviews.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer id="contact" aria-label="Footer">
+    <div class="container footer-cta">
+      <h2 style="color:#F8FAFC">Ready to automate your work?</h2>
+      <p>Start your free trial today and ship your next workflow in minutes.</p>
+      <div>
+        <a class="btn btn-primary" href="#pricing" aria-label="Start free trial from footer">Start Free Trial</a>
+      </div>
+      <p style="margin-top:6px; color:#94A3B8">Questions? Email support@flowpilot.app</p>
+    </div>
+    <div class="container footer-legal">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap">
+        <div>© <span id="year"></span> FlowPilot Inc.</div>
+        <nav class="links" aria-label="Legal">
+          <a href="#" rel="nofollow">Terms</a>
+          <a href="#" rel="nofollow">Privacy</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Dynamic year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Mobile menu toggle
+    const burger = document.querySelector('.hamburger');
+    const panel = document.getElementById('mobile-menu');
+    if (burger) {
+      burger.addEventListener('click', () => {
+        const expanded = burger.getAttribute('aria-expanded') === 'true';
+        burger.setAttribute('aria-expanded', String(!expanded));
+        panel.classList.toggle('open', !expanded);
+        burger.setAttribute('aria-label', !expanded ? 'Close menu' : 'Open menu');
+      });
+
+      // Close on link click
+      panel.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+          burger.setAttribute('aria-expanded', 'false');
+          panel.classList.remove('open');
+        });
+      });
+    }
+
+    // Close mobile menu on outside click
+    document.addEventListener('click', (e) => {
+      if (!panel.contains(e.target) && !burger.contains(e.target)) {
+        burger.setAttribute('aria-expanded', 'false');
+        panel.classList.remove('open');
+      }
+    });
+
+    // Accessible accordion: only one open at a time
+    const faqs = Array.from(document.querySelectorAll('section[aria-label="FAQ"] details'));
+    faqs.forEach(d => {
+      d.addEventListener('toggle', () => {
+        if (d.open) {
+          faqs.filter(x => x !== d && x.open).forEach(x => x.open = false);
+        }
+      });
+    });
+
+    // Improve keyboard focus for summary
+    document.querySelectorAll('summary').forEach(s => {
+      s.setAttribute('role', 'button');
+      s.setAttribute('aria-expanded', 'false');
+      s.addEventListener('click', () => {
+        const parent = s.parentElement;
+        const open = parent.hasAttribute('open');
+        s.setAttribute('aria-expanded', String(open));
+      });
+      s.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          s.click();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
