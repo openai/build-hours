@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowPilot — Simple, smart SaaS to scale your workflow</title>
+  <meta name="description" content="FlowPilot helps teams automate workflows, track progress, and deliver faster with an intuitive cloud platform." />
+  <style>
+    :root{
+      /* Colors */
+      --color-primary:#2563EB;
+      --color-primary-hover:#1D4ED8; /* ~10% darker */
+      --color-primary-active:#1E40AF;
+      --color-secondary:#10B981;
+      --color-secondary-hover:#059669;
+      --color-text:#374151;
+      --color-muted:#6B7280;
+      --color-bg:#FFFFFF;
+      --color-surface:#F9FAFB;
+      --color-border:#E5E7EB;
+
+      /* Typography */
+      --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+      --fs-1:2.5rem;    /* h1 */
+      --fs-2:1.75rem;   /* h2 */
+      --fs-3:1.25rem;   /* h3 */
+      --fs-base:1rem;   /* body */
+      --lh-tight:1.2;
+      --lh-normal:1.6;
+
+      /* Spacing */
+      --space-0:0;
+      --space-1:0.25rem;
+      --space-2:0.5rem;
+      --space-3:0.75rem;
+      --space-4:1rem;
+      --space-5:1.25rem;
+      --space-6:1.5rem;
+      --space-8:2rem;
+      --space-10:2.5rem;
+      --space-12:3rem;
+
+      /* Radius & Shadows */
+      --radius:0.75rem;
+      --radius-sm:0.5rem;
+      --shadow-sm:0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md:0 8px 24px rgba(0,0,0,0.08);
+      --shadow-lg:0 16px 40px rgba(0,0,0,0.12);
+
+      /* Layout */
+      --container:72rem;
+      --nav-h:4rem;
+      --transition-fast:0.2s;
+      --transition:0.3s;
+    }
+
+    /* Base */
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      margin:0;
+      font-family:var(--font-sans);
+      font-size:var(--fs-base);
+      line-height:var(--lh-normal);
+      color:var(--color-text);
+      background:var(--color-bg);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    img, svg { display:block; max-width:100%; }
+    a { color:var(--color-primary); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    :focus-visible { outline:3px solid var(--color-primary); outline-offset:2px; }
+
+    /* Utilities */
+    .container { max-width:var(--container); margin:0 auto; padding:0 var(--space-4); }
+    .section { padding: var(--space-12) 0; }
+    .muted { color:var(--color-muted); }
+    .center { text-align:center; }
+    .grid { display:grid; gap: var(--space-6); }
+    .badge {
+      display:inline-block; font-size:0.75rem; font-weight:600; padding:0.25rem 0.5rem;
+      border-radius:999px; background:rgba(16,185,129,0.12); color:var(--color-secondary);
+      border:1px solid rgba(16,185,129,0.2);
+    }
+
+    /* Typography scale */
+    h1 { font-size:var(--fs-1); line-height:var(--lh-tight); margin:0 0 var(--space-4); }
+    h2 { font-size:var(--fs-2); line-height:var(--lh-tight); margin:0 0 var(--space-4); }
+    h3 { font-size:var(--fs-3); line-height:var(--lh-tight); margin:0 0 var(--space-3); }
+    p { margin:0 0 var(--space-4); }
+
+    /* Buttons */
+    .btn {
+      display:inline-flex; align-items:center; justify-content:center;
+      gap: var(--space-2);
+      font-weight:600;
+      border-radius:999px;
+      padding:0.75rem 1.25rem;
+      border:1px solid transparent;
+      cursor:pointer;
+      transition:background-color var(--transition), color var(--transition), border-color var(--transition), transform var(--transition-fast), box-shadow var(--transition-fast);
+      min-height:44px; /* touch target */
+    }
+    .btn:active { transform:translateY(0.5px); }
+    .btn-primary {
+      background:var(--color-primary);
+      color:#fff;
+      box-shadow:var(--shadow-sm);
+    }
+    .btn-primary:hover { background:var(--color-primary-hover); }
+    .btn-primary:active { background:var(--color-primary-active); }
+    .btn-outline {
+      background:#fff;
+      border-color:var(--color-border);
+      color:var(--color-text);
+    }
+    .btn-outline:hover {
+      background:rgba(37,99,235,0.06);
+      border-color:#cbd5e1;
+    }
+
+    /* Navigation */
+    .skip-link{
+      position:absolute; left:-999px; top:auto; width:1px; height:1px; overflow:hidden;
+    }
+    .skip-link:focus{ position:static; width:auto; height:auto; background:#fff; padding:var(--space-2) var(--space-3); border-radius:var(--radius-sm); box-shadow:var(--shadow-sm); }
+
+    header.nav {
+      position:sticky; top:0; z-index:50; background:rgba(255,255,255,0.9);
+      backdrop-filter:saturate(180%) blur(8px);
+      border-bottom:1px solid var(--color-border);
+    }
+    .nav-inner {
+      height:var(--nav-h);
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .brand {
+      display:flex; align-items:center; gap: var(--space-3);
+      font-weight:800;
+      letter-spacing:0.2px;
+    }
+    .brand-mark {
+      width:28px; height:28px; border-radius:8px;
+      background: conic-gradient(from 120deg, #93C5FD, #10B981, #2563EB, #93C5FD);
+      box-shadow: inset 0 0 0 2px #fff, var(--shadow-sm);
+    }
+    nav ul { list-style:none; margin:0; padding:0; display:flex; gap: var(--space-6); }
+    .nav-link { color:var(--color-text); font-weight:600; }
+    .nav-link:hover { color:var(--color-primary); text-decoration:none; }
+    /* Hamburger */
+    .hamburger {
+      display:inline-flex; flex-direction:column; gap:5px; background:transparent; border:0; padding:8px;
+      cursor:pointer; border-radius:8px;
+    }
+    .hamburger span { width:24px; height:2px; background:var(--color-text); transition:transform var(--transition), opacity var(--transition); border-radius:2px; }
+    .mobile-menu { display:none; }
+    .mobile-menu.open{ display:block; }
+    .mobile-panel{
+      padding: var(--space-4) 0 var(--space-6);
+      border-bottom:1px solid var(--color-border);
+      background:#fff;
+    }
+    .mobile-panel a{ display:block; padding:0.75rem 0; font-weight:600; color:var(--color-text); }
+    .mobile-panel a:hover{ color:var(--color-primary); }
+
+    /* Hero */
+    .hero {
+      position:relative;
+      background:
+        radial-gradient(1200px 500px at 80% -50%, rgba(37,99,235,0.12), transparent 60%),
+        radial-gradient(700px 300px at -10% 20%, rgba(16,185,129,0.12), transparent 60%),
+        linear-gradient(180deg, #ffffff, #ffffff);
+    }
+    .hero-inner {
+      display:grid; align-items:center; gap: var(--space-8);
+      padding-top: calc(var(--space-12) + var(--space-4));
+      padding-bottom: var(--space-12);
+    }
+    .hero h1, .hero p, .hero .btn { opacity:0; transform:translateY(8px); animation:fadeInUp var(--transition) ease-out forwards; }
+    .hero h1{ animation-delay:0.05s; }
+    .hero p{ animation-delay:0.12s; }
+    .hero .btn{ animation-delay:0.18s; }
+    @keyframes fadeInUp{
+      to { opacity:1; transform:translateY(0); }
+    }
+
+    /* Feature cards */
+    .features-grid {
+      grid-template-columns:1fr;
+    }
+    .card {
+      background:#fff; border:1px solid var(--color-border); border-radius:var(--radius);
+      padding: var(--space-6); box-shadow:var(--shadow-sm); transition:transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+    .card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); border-color:#d1d5db; }
+    .icon {
+      width:40px; height:40px; border-radius:10px; display:grid; place-items:center;
+      background:rgba(37,99,235,0.08); color:var(--color-primary); margin-bottom:var(--space-4);
+    }
+
+    /* Pricing */
+    .pricing-grid { grid-template-columns:1fr; }
+    .plan {
+      position:relative;
+      background:#fff; border:1px solid var(--color-border); border-radius:var(--radius);
+      padding: var(--space-6); box-shadow:var(--shadow-sm);
+      display:flex; flex-direction:column; gap: var(--space-4);
+      transition:transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+    .plan:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); border-color:#d1d5db; }
+    .price { font-size:2rem; font-weight:800; }
+    .plan .features { display:grid; gap:0.5rem; margin: var(--space-2) 0 var(--space-4); }
+    .plan .features li { display:flex; align-items:center; gap:0.5rem; }
+    .popular {
+      border-color: rgba(37,99,235,0.35);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.08), var(--shadow-md);
+    }
+    .popular .popular-badge {
+      position:absolute; top: -12px; right: 12px;
+      background:var(--color-primary); color:#fff; font-weight:700; font-size:0.75rem;
+      padding:0.35rem 0.6rem; border-radius:999px; box-shadow:var(--shadow-sm);
+    }
+
+    /* Testimonials */
+    .testimonials-grid { grid-template-columns:1fr; }
+    .testimonial {
+      background:#fff; border:1px solid var(--color-border); border-radius:var(--radius);
+      padding: var(--space-6); box-shadow:var(--shadow-sm);
+      display:flex; gap: var(--space-4);
+      transition:transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+    .testimonial:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); border-color:#d1d5db; }
+    .avatar {
+      width:48px; height:48px; border-radius:999px;
+      background:linear-gradient(135deg, #93C5FD, #10B981);
+      flex:0 0 48px; display:grid; place-items:center; color:#fff; font-weight:800;
+    }
+    .quote { font-style:italic; color:var(--color-text); }
+
+    /* FAQ */
+    .faq {
+      max-width:48rem; margin:0 auto;
+    }
+    details {
+      border:1px solid var(--color-border); border-radius:var(--radius);
+      background:#fff; padding: var(--space-4) var(--space-5); box-shadow:var(--shadow-sm);
+    }
+    details + details { margin-top: var(--space-4); }
+    summary {
+      font-weight:700; cursor:pointer; list-style:none;
+    }
+    summary::-webkit-details-marker { display:none; }
+    summary::after {
+      content: "＋"; float:right; color:var(--color-muted); transition:transform var(--transition);
+      font-weight:700;
+    }
+    details[open] summary::after { content:"—"; }
+    details p { margin-top: var(--space-3); color:var(--color-muted); }
+
+    /* Footer */
+    footer {
+      background: var(--color-surface);
+      border-top:1px solid var(--color-border);
+    }
+    .footer-top {
+      padding: var(--space-12) 0 var(--space-8);
+      text-align:center;
+    }
+    .footer-links {
+      display:flex; gap: var(--space-6); justify-content:center; flex-wrap:wrap;
+      padding-bottom: var(--space-8);
+    }
+    .footer-links a { color:var(--color-muted); }
+    .footer-bottom {
+      border-top:1px solid var(--color-border);
+      padding: var(--space-4) 0;
+      display:flex; justify-content:center; color:var(--color-muted);
+      font-size:0.875rem;
+    }
+
+    /* Responsive */
+    @media (min-width:640px){
+      .hero-inner { grid-template-columns: 1.1fr 0.9fr; }
+      .features-grid { grid-template-columns:repeat(2, minmax(0,1fr)); }
+      .pricing-grid { grid-template-columns:repeat(2, minmax(0,1fr)); }
+      .testimonials-grid { grid-template-columns:repeat(2, minmax(0,1fr)); }
+      .mobile-menu{ display:none !important; }
+    }
+    @media (min-width:1024px){
+      .features-grid { grid-template-columns:repeat(4, minmax(0,1fr)); }
+      .pricing-grid { grid-template-columns:repeat(3, minmax(0,1fr)); }
+      .testimonials-grid { grid-template-columns:repeat(3, minmax(0,1fr)); }
+    }
+
+    /* Section anchor offset for sticky nav */
+    section, footer { scroll-margin-top: calc(var(--nav-h) + 12px); }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion:reduce){
+      * { animation:none !important; transition:none !important; }
+      html { scroll-behavior:auto; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Navigation -->
+  <header class="nav" role="banner">
+    <div class="container nav-inner">
+      <a href="#" class="brand" aria-label="FlowPilot Home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>FlowPilot</span>
+      </a>
+      <nav aria-label="Primary">
+        <button class="hamburger" id="menuButton" aria-label="Toggle menu" aria-controls="mobileMenu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <ul class="desktop-links" aria-label="Primary navigation" style="display:none;">
+          <li><a class="nav-link" href="#features">Features</a></li>
+          <li><a class="nav-link" href="#pricing">Pricing</a></li>
+          <li><a class="nav-link" href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="false" aria-label="Mobile navigation">
+      <div class="container mobile-panel">
+        <a href="#features" class="mobile-link">Features</a>
+        <a href="#pricing" class="mobile-link">Pricing</a>
+        <a href="#contact" class="mobile-link">Contact</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero section" aria-labelledby="hero-heading">
+      <div class="container hero-inner">
+        <div>
+          <h1 id="hero-heading">Automate work. Align teams. Ship faster.</h1>
+          <p class="muted">FlowPilot is the all‑in‑one platform to streamline workflows, connect tools, and gain real‑time visibility.</p>
+          <div style="margin-top:var(--space-6); display:flex; gap:var(--space-3); flex-wrap:wrap;">
+            <a class="btn btn-primary" href="#pricing" aria-label="Start free trial">Start Free Trial</a>
+            <a class="btn btn-outline" href="#features" aria-label="Explore features">Explore Features</a>
+          </div>
+        </div>
+        <div aria-hidden="true">
+          <!-- Decorative illustrative panel using inline SVG (no external assets) -->
+          <svg viewBox="0 0 520 360" role="img" aria-label="Product preview illustration">
+            <defs>
+              <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#93C5FD"/>
+                <stop offset="100%" stop-color="#10B981"/>
+              </linearGradient>
+              <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="100%" stop-color="#EEF2FF"/>
+              </linearGradient>
+            </defs>
+            <rect x="10" y="10" width="500" height="340" rx="14" fill="url(#g2)" stroke="#E5E7EB"/>
+            <rect x="30" y="40" width="460" height="18" rx="9" fill="#E5E7EB"/>
+            <rect x="30" y="80" width="180" height="14" rx="7" fill="#CBD5E1"/>
+            <rect x="30" y="106" width="260" height="10" rx="5" fill="#E5E7EB"/>
+            <rect x="30" y="126" width="220" height="10" rx="5" fill="#E5E7EB"/>
+            <rect x="30" y="146" width="200" height="10" rx="5" fill="#E5E7EB"/>
+
+            <rect x="320" y="110" width="150" height="90" rx="10" fill="#FFFFFF" stroke="#E5E7EB"/>
+            <circle cx="345" cy="145" r="18" fill="rgba(37,99,235,0.15)" />
+            <rect x="370" y="130" width="80" height="8" rx="4" fill="#CBD5E1"/>
+            <rect x="370" y="145" width="70" height="8" rx="4" fill="#E5E7EB"/>
+
+            <rect x="30" y="190" width="440" height="110" rx="12" fill="#FFFFFF" stroke="#E5E7EB"/>
+            <rect x="50" y="210" width="120" height="12" rx="6" fill="#CBD5E1"/>
+            <rect x="50" y="230" width="200" height="10" rx="5" fill="#E5E7EB"/>
+            <rect x="50" y="248" width="260" height="10" rx="5" fill="#E5E7EB"/>
+            <rect x="50" y="266" width="180" height="10" rx="5" fill="#E5E7EB"/>
+            <rect x="360" y="230" width="90" height="34" rx="8" fill="url(#g1)"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="section" aria-labelledby="features-heading">
+      <div class="container">
+        <h2 id="features-heading" class="center">Everything you need to move ideas to impact</h2>
+        <p class="muted center" style="margin-bottom:var(--space-8);">Powerful building blocks designed for speed, clarity, and collaboration.</p>
+        <div class="grid features-grid">
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" role="img" aria-label="Workflow icon">
+                <title>Automation</title>
+                <path fill="currentColor" d="M7 3h10v4H7zM3 10h6v4H3zM15 10h6v4h-6zM7 17h10v4H7z"/>
+              </svg>
+            </div>
+            <h3>Automation</h3>
+            <p class="muted">Create no‑code workflows that trigger actions across your tools automatically.</p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true" style="background:rgba(16,185,129,0.1); color:var(--color-secondary);">
+              <svg width="22" height="22" viewBox="0 0 24 24" role="img" aria-label="Dashboards icon">
+                <title>Dashboards</title>
+                <path fill="currentColor" d="M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z"/>
+              </svg>
+            </div>
+            <h3>Dashboards</h3>
+            <p class="muted">Visualize progress with live dashboards and shareable reports.</p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" role="img" aria-label="Integrations icon">
+                <title>Integrations</title>
+                <path fill="currentColor" d="M7 2a3 3 0 0 1 3 3v3H8V5a1 1 0 0 0-2 0v3H4V5a3 3 0 0 1 3-3zm10 0a3 3 0 0 1 3 3v3h-2V5a1 1 0 1 0-2 0v3h-2V5a3 3 0 0 1 3-3zM7 22a3 3 0 0 1-3-3v-3h2v3a1 1 0 0 0 2 0v-3h2v3a3 3 0 0 1-3 3zm10 0a3 3 0 0 1-3-3v-3h2v3a1 1 0 1 0 2 0v-3h2v3a3 3 0 0 1-3 3z"/>
+              </svg>
+            </div>
+            <h3>Integrations</h3>
+            <p class="muted">Connect Slack, Jira, GitHub, and 50+ apps to reduce context switching.</p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true" style="background:rgba(37,99,235,0.08); color:var(--color-primary);">
+              <svg width="22" height="22" viewBox="0 0 24 24" role="img" aria-label="Security icon">
+                <title>Security</title>
+                <path fill="currentColor" d="M12 2l8 4v6c0 5-3.5 9.5-8 10-4.5-.5-8-5-8-10V6l8-4zm0 6a4 4 0 0 0-4 4v1a4 4 0 1 0 8 0v-1a4 4 0 0 0-4-4z"/>
+              </svg>
+            </div>
+            <h3>Security</h3>
+            <p class="muted">Built‑in SSO, audit logs, and role‑based access keep data safe.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="section" aria-labelledby="pricing-heading" style="background:linear-gradient(#fff, #fff 60%, #F9FAFB);">
+      <div class="container">
+        <h2 id="pricing-heading" class="center">Flexible pricing that scales with you</h2>
+        <p class="muted center" style="margin-bottom:var(--space-8);">Choose a plan and start your 14‑day free trial — no credit card required.</p>
+        <div class="grid pricing-grid">
+          <article class="plan" aria-label="Basic plan">
+            <h3>Basic</h3>
+            <p class="muted">For individuals and small projects.</p>
+            <div class="price">$9<span class="muted" style="font-size:0.875rem;">/mo</span></div>
+            <ul class="features" aria-label="Basic features">
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="var(--color-secondary)" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+                5 active workflows
+              </li>
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="var(--color-secondary)" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+                10 integrations
+              </li>
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="var(--color-secondary)" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+                Community support
+              </li>
+            </ul>
+            <a href="#contact" class="btn btn-outline" aria-label="Choose Basic">Get Started</a>
+          </article>
+
+          <article class="plan popular" aria-label="Pro plan">
+            <span class="popular-badge" aria-hidden="true">Most Popular</span>
+            <h3>Pro</h3>
+            <p class="muted">For growing teams that need more power.</p>
+            <div class="price">$29<span class="muted" style="font-size:0.875rem;">/mo</span></div>
+            <ul class="features" aria-label="Pro features">
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="var(--color-secondary)" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+                Unlimited workflows
+              </li>
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="var(--color-secondary)" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+                50+ integrations
+              </li>
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="var(--color-secondary)" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+                Advanced permissions
+              </li>
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="var(--color-secondary)" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+                Priority support
+              </li>
+            </ul>
+            <a href="#contact" class="btn btn-primary" aria-label="Choose Pro">Start Free Trial</a>
+          </article>
+
+          <article class="plan" aria-label="Enterprise plan">
+            <h3>Enterprise</h3>
+            <p class="muted">For security‑focused organizations.</p>
+            <div class="price">Custom</div>
+            <ul class="features" aria-label="Enterprise features">
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="var(--color-secondary)" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+                SSO/SAML, SCIM
+              </li>
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="var(--color-secondary)" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+                Dedicated VPC & SLA
+              </li>
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="var(--color-secondary)" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+                Custom integrations
+              </li>
+            </ul>
+            <a href="#contact" class="btn btn-outline" aria-label="Contact sales">Contact Sales</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section" aria-labelledby="testimonials-heading">
+      <div class="container">
+        <h2 id="testimonials-heading" class="center">Trusted by fast‑moving teams</h2>
+        <p class="muted center" style="margin-bottom:var(--space-8);">Here’s what our customers say.</p>
+        <div class="grid testimonials-grid">
+          <article class="testimonial" aria-label="Testimonial by Ava Patel">
+            <div class="avatar" aria-hidden="true">A</div>
+            <div>
+              <strong>Ava Patel</strong>
+              <div class="muted" style="font-size:0.9rem; margin-bottom:var(--space-2);">Head of Operations</div>
+              <p class="quote">FlowPilot cut our delivery time by 30%. It’s become our team’s command center.</p>
+            </div>
+          </article>
+          <article class="testimonial" aria-label="Testimonial by Marco Liu">
+            <div class="avatar" aria-hidden="true">M</div>
+            <div>
+              <strong>Marco Liu</strong>
+              <div class="muted" style="font-size:0.9rem; margin-bottom:var(--space-2);">Engineering Manager</div>
+              <p class="quote">Setting up automations took minutes and removed a ton of manual work.</p>
+            </div>
+          </article>
+          <article class="testimonial" aria-label="Testimonial by Sofia Reyes">
+            <div class="avatar" aria-hidden="true">S</div>
+            <div>
+              <strong>Sofia Reyes</strong>
+              <div class="muted" style="font-size:0.9rem; margin-bottom:var(--space-2);">Product Lead</div>
+              <p class="quote">The dashboards give us instant clarity. We finally have a single source of truth.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" aria-labelledby="faq-heading">
+      <div class="container faq">
+        <h2 id="faq-heading" class="center">Frequently asked questions</h2>
+        <details>
+          <summary>How does the free trial work?</summary>
+          <p>You get full access to all Pro features for 14 days. No credit card required.</p>
+        </details>
+        <details>
+          <summary>Can I cancel anytime?</summary>
+          <p>Yes. You can downgrade or cancel from your billing settings at any time.</p>
+        </details>
+        <details>
+          <summary>Do you offer discounts for nonprofits or education?</summary>
+          <p>We do. Contact us and our team will help with a custom discount.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer id="contact" aria-labelledby="footer-heading">
+    <div class="container footer-top">
+      <h2 id="footer-heading">Ready to accelerate your workflow?</h2>
+      <p class="muted">Start your free trial today and see FlowPilot in action.</p>
+      <div style="margin-top:var(--space-5);">
+        <a class="btn btn-primary" href="#pricing" aria-label="Start free trial from footer">Start Free Trial</a>
+      </div>
+      <div class="muted" style="margin-top:var(--space-6);">
+        Prefer email? <a href="mailto:hello@flowpilot.example" aria-label="Email FlowPilot">hello@flowpilot.example</a>
+      </div>
+    </div>
+    <div class="container footer-links">
+      <a href="#" aria-label="Terms of Service">Terms</a>
+      <a href="#" aria-label="Privacy Policy">Privacy</a>
+      <a href="#contact" aria-label="Contact">Contact</a>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> FlowPilot, Inc. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script>
+    // Year stamp
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Desktop nav show/hide based on media query to avoid FOUC
+    const mq = window.matchMedia('(min-width: 640px)');
+    const desktopLinks = document.querySelector('.desktop-links');
+    function handleMQ(e){
+      desktopLinks.style.display = e.matches ? 'flex' : 'none';
+    }
+    handleMQ(mq);
+    mq.addEventListener('change', handleMQ);
+
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menuButton');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    function closeMenu(){
+      mobileMenu.classList.remove('open');
+      menuBtn.setAttribute('aria-expanded','false');
+    }
+    function openMenu(){
+      mobileMenu.classList.add('open');
+      menuBtn.setAttribute('aria-expanded','true');
+    }
+    menuBtn.addEventListener('click', () => {
+      const expanded = menuBtn.getAttribute('aria-expanded') === 'true';
+      expanded ? closeMenu() : openMenu();
+    });
+
+    // Close menu on link click
+    mobileMenu.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        closeMenu();
+      });
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape') closeMenu();
+    });
+  </script>
+</body>
+</html>
