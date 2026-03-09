@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agentic Legibility"
+  short_description: "Score how legible a repo is to coding agents"
+  default_prompt: "Use $agentic-legibility to score this repository's agentic legibility and identify the highest-value fixes."
