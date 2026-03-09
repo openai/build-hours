@@ -63,9 +63,16 @@ export const AnalysisResultSchema = z.object({
   metrics: AnalysisMetricsSchema,
 });
 
+export const AnalysisSummarySchema = z.object({
+  summary: z.string().min(1),
+});
+
 export const AnalyzeRequestSchema = z.object({
   repoUrl: z.string().min(1),
-  customInstructions: z.string().max(4000).optional(),
+  customInstructions: z
+    .string()
+    .max(4000, "Custom instructions must be 4000 characters or fewer.")
+    .optional(),
 });
 
 export const AnalysisStreamEventSchema = z.discriminatedUnion("type", [
@@ -115,5 +122,6 @@ export type Confidence = z.infer<typeof ConfidenceSchema>;
 export type AnalysisMetricResult = z.infer<typeof AnalysisMetricResultSchema>;
 export type ScopeCandidate = z.infer<typeof ScopeCandidateSchema>;
 export type AnalysisResult = z.infer<typeof AnalysisResultSchema>;
+export type AnalysisSummary = z.infer<typeof AnalysisSummarySchema>;
 export type AnalyzeRequest = z.infer<typeof AnalyzeRequestSchema>;
 export type AnalysisStreamEvent = z.infer<typeof AnalysisStreamEventSchema>;

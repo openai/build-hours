@@ -15,6 +15,16 @@ Keep the main score limited to evidence present in version control. Do not claim
 
 Use metric selection when you want to split scoring across multiple hosted-shell or Responses API runs and aggregate the JSON results upstream.
 
+## Hosted Use
+
+This folder is the skill bundle you upload or register when you want to mount `agentic-legibility` into hosted shell.
+
+Public docs for that workflow:
+
+- [Skills guide](https://developers.openai.com/api/docs/guides/tools-skills/)
+- [Shell guide: Attach skills](https://developers.openai.com/api/docs/guides/tools-shell/#attach-skills)
+- [Skills in OpenAI API cookbook](https://developers.openai.com/cookbook/examples/skills_in_api/)
+
 ## Workflow
 
 1. Run `scripts/score_repo.py` against the target repository.

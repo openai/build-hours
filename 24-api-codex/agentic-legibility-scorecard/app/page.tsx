@@ -177,6 +177,7 @@ export default function Home() {
               placeholder="Focus on client/. Treat server/ and worker/ separately. Ignore generated docs."
               value={customInstructions}
               onChange={(event) => setCustomInstructions(event.target.value)}
+              maxLength={4000}
               rows={2}
             />
           </div>

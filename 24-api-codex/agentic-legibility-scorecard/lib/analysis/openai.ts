@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
+import { z } from "zod";
 import type {
   Response,
   ResponseCreateParamsStreaming,
@@ -15,7 +16,9 @@ import type {
 
 import type { NormalizedGitHubRepo } from "@/lib/analysis/github";
 import {
+  AnalysisSummarySchema,
   AnalysisResultSchema,
+  type AnalysisSummary,
   type AnalysisResult,
   type AnalysisStreamEvent,
 } from "@/lib/analysis/types";
@@ -36,6 +39,40 @@ export type OpenAIEventMapper = {
   mapEvent: (event: ResponseStreamEvent) => AnalysisStreamEvent[];
   hasFinalResult: () => boolean;
 };
+
+const ScorerMetricSchema = z.object({
+  score: z.number().int().min(0).max(3),
+  confidence: z.enum(["low", "medium", "high"]),
+  evidence: z.array(z.string()),
+  gaps: z.string(),
+  next_step: z.string(),
+});
+
+const ScorerReportSchema = z.object({
+  evaluated_scope: z.string().min(1),
+  discovered_scopes: z.array(
+    z.object({
+      path: z.string().min(1),
+      score: z.number().int().nonnegative(),
+      signals: z.array(z.string()),
+    }),
+  ),
+  score: z.number().int().min(0),
+  max_score: z.number().int().positive(),
+  score_percentage: z.number().int().min(0).max(100),
+  quick_wins: z.array(z.string()),
+  metrics: z.object({
+    bootstrap_self_sufficiency: ScorerMetricSchema,
+    task_entrypoints: ScorerMetricSchema,
+    validation_harness: ScorerMetricSchema,
+    lint_format_gates: ScorerMetricSchema,
+    agent_repo_map: ScorerMetricSchema,
+    structured_docs: ScorerMetricSchema,
+    decision_records: ScorerMetricSchema,
+  }),
+});
+
+type ScorerReport = z.infer<typeof ScorerReportSchema>;
 
 export function getOpenAIConfig(): OpenAIAnalysisConfig {
   const apiKey = process.env.OPENAI_API_KEY?.trim();
@@ -75,7 +112,7 @@ export function buildAnalysisRequest(
     store: false,
     tool_choice: "auto",
     text: {
-      format: zodTextFormat(AnalysisResultSchema, "analysis_result"),
+      format: zodTextFormat(AnalysisSummarySchema, "analysis_summary"),
     },
     tools: [
       {
@@ -106,12 +143,9 @@ export function buildAnalysisRequest(
       "Run score_repo.py exactly once in JSON mode for the cloned repository using the seven default metrics.",
       "The scorer may auto-discover a nested scope to evaluate if the repo clearly routes work into one self-contained subsystem.",
       "If you intentionally choose a specific subdirectory because the user asked for it or the repo structure makes that the only coherent scope, use score_repo.py with --scope <relative-path>.",
-      "Then produce exactly one final JSON object matching the requested schema.",
-      "Populate repoUrl and normalizedRepo from the target repository.",
-      "Preserve evaluatedScope and discoveredScopes from the scorer output.",
-      "Map maxScore from the script's max_score field and scorePercentage from score_percentage.",
-      "Carry the script's quick_wins into quickWins.",
+      "Then produce exactly one final JSON object with only one field: summary.",
       "Write a short summary that highlights the strongest signals and the most important legibility gaps.",
+      "Do not restate scores, scopes, quick wins, or metric details because the backend derives those directly from score_repo.py output.",
       "Do not include markdown fences, prose before the JSON, or extra fields.",
       trimmedCustomInstructions
         ? `Additional user instructions for scope or emphasis: ${trimmedCustomInstructions}`
@@ -140,6 +174,8 @@ export function createOpenAIEventMapper(
   repo: NormalizedGitHubRepo,
 ): OpenAIEventMapper {
   const startedAtByCall = new Map<string, number>();
+  const commandsByCall = new Map<string, string>();
+  const outputByCall = new Map<string, { stdout: string; stderr: string }>();
   const completedCallIds = new Set<string>();
   const seenOutputFingerprints = new Set<string>();
   let sawFinalResult = false;
@@ -157,6 +193,8 @@ export function createOpenAIEventMapper(
           return mapOutputItem(
             event,
             startedAtByCall,
+            commandsByCall,
+            outputByCall,
             completedCallIds,
             seenOutputFingerprints,
           );
@@ -164,14 +202,15 @@ export function createOpenAIEventMapper(
           return mapOutputItem(
             event,
             startedAtByCall,
+            commandsByCall,
+            outputByCall,
             completedCallIds,
             seenOutputFingerprints,
           );
         case "response.completed": {
-          const result = overwriteRepoIdentity(
-            extractFinalResultFromResponse(event.response),
-            repo,
-          );
+          const summary = extractAnalysisSummaryFromResponse(event.response);
+          const scorerReport = extractAuthoritativeScorerReport(commandsByCall, outputByCall);
+          const result = overwriteRepoIdentity(buildAnalysisResult(summary, scorerReport), repo);
           sawFinalResult = true;
           return [{ type: "final_result", result }];
         }
@@ -213,10 +252,10 @@ export function createOpenAIEventMapper(
   };
 }
 
-export function extractFinalResultFromResponse(response: Response): AnalysisResult {
+export function extractAnalysisSummaryFromResponse(response: Response): AnalysisSummary {
   const rawText = extractResponseText(response);
   const parsed = JSON.parse(rawText);
-  return AnalysisResultSchema.parse(parsed);
+  return AnalysisSummarySchema.parse(parsed);
 }
 
 export function isAbortError(error: unknown): boolean {
@@ -249,19 +288,22 @@ function statusMessage(
 function mapOutputItem(
   event: ResponseOutputItemAddedEvent | ResponseOutputItemDoneEvent,
   startedAtByCall: Map<string, number>,
+  commandsByCall: Map<string, string>,
+  outputByCall: Map<string, { stdout: string; stderr: string }>,
   completedCallIds: Set<string>,
   seenOutputFingerprints: Set<string>,
 ): AnalysisStreamEvent[] {
   const item = event.item;
 
   if (item.type === "shell_call") {
-    return mapShellCallItem(item, startedAtByCall, completedCallIds);
+    return mapShellCallItem(item, startedAtByCall, commandsByCall, completedCallIds);
   }
 
   if (item.type === "shell_call_output") {
     return mapShellCallOutputItem(
       item,
       startedAtByCall,
+      outputByCall,
       completedCallIds,
       seenOutputFingerprints,
     );
@@ -273,17 +315,21 @@ function mapOutputItem(
 function mapShellCallItem(
   item: ResponseFunctionShellToolCall,
   startedAtByCall: Map<string, number>,
+  commandsByCall: Map<string, string>,
   completedCallIds: Set<string>,
 ): AnalysisStreamEvent[] {
   const events: AnalysisStreamEvent[] = [];
   const startedAt = new Date().toISOString();
+  const command = item.action.commands.join("\n");
+
+  commandsByCall.set(item.call_id, command);
 
   if (!startedAtByCall.has(item.call_id)) {
     startedAtByCall.set(item.call_id, Date.now());
     events.push({
       type: "shell_call_started",
       callId: item.call_id,
-      command: item.action.commands.join("\n"),
+      command,
       startedAt,
     });
   }
@@ -303,16 +349,20 @@ function mapShellCallItem(
 function mapShellCallOutputItem(
   item: ResponseFunctionShellToolCallOutput,
   startedAtByCall: Map<string, number>,
+  outputByCall: Map<string, { stdout: string; stderr: string }>,
   completedCallIds: Set<string>,
   seenOutputFingerprints: Set<string>,
 ): AnalysisStreamEvent[] {
   const events: AnalysisStreamEvent[] = [];
 
-  for (const chunk of item.output) {
+  for (const [chunkIndex, chunk] of item.output.entries()) {
     if (chunk.stdout) {
+      appendShellOutput(outputByCall, item.call_id, "stdout", chunk.stdout);
       pushShellOutput(
         events,
         seenOutputFingerprints,
+        item.id,
+        chunkIndex,
         item.call_id,
         "stdout",
         chunk.stdout,
@@ -320,24 +370,27 @@ function mapShellCallOutputItem(
     }
 
     if (chunk.stderr) {
+      appendShellOutput(outputByCall, item.call_id, "stderr", chunk.stderr);
       pushShellOutput(
         events,
         seenOutputFingerprints,
+        item.id,
+        chunkIndex,
         item.call_id,
         "stderr",
         chunk.stderr,
       );
     }
 
-    if (
-      chunk.outcome.type === "exit" &&
-      !completedCallIds.has(item.call_id)
-    ) {
+    if (isCompletedShellOutcome(chunk.outcome.type) && !completedCallIds.has(item.call_id)) {
       completedCallIds.add(item.call_id);
       events.push({
         type: "shell_call_completed",
         callId: item.call_id,
-        exitCode: chunk.outcome.exit_code,
+        exitCode:
+          chunk.outcome.type === "exit"
+            ? chunk.outcome.exit_code
+            : undefined,
         durationMs: durationMs(item.call_id, startedAtByCall),
       });
     }
@@ -361,11 +414,13 @@ function mapShellCallOutputItem(
 function pushShellOutput(
   events: AnalysisStreamEvent[],
   seenOutputFingerprints: Set<string>,
+  itemId: string,
+  chunkIndex: number,
   callId: string,
   stream: "stdout" | "stderr",
   text: string,
 ): void {
-  const fingerprint = `${callId}:${stream}:${text}`;
+  const fingerprint = `${itemId}:${chunkIndex}:${stream}:${text}`;
   if (seenOutputFingerprints.has(fingerprint)) {
     return;
   }
@@ -389,6 +444,83 @@ function durationMs(
   }
 
   return Math.max(0, Date.now() - startedAt);
+}
+
+function appendShellOutput(
+  outputByCall: Map<string, { stdout: string; stderr: string }>,
+  callId: string,
+  stream: "stdout" | "stderr",
+  text: string,
+): void {
+  const existing = outputByCall.get(callId) ?? { stdout: "", stderr: "" };
+  existing[stream] += text;
+  outputByCall.set(callId, existing);
+}
+
+function isCompletedShellOutcome(outcomeType: string): boolean {
+  return outcomeType === "exit" || outcomeType === "timeout" || outcomeType === "signal";
+}
+
+function extractAuthoritativeScorerReport(
+  commandsByCall: Map<string, string>,
+  outputByCall: Map<string, { stdout: string; stderr: string }>,
+): ScorerReport {
+  for (const [callId, command] of [...commandsByCall.entries()].reverse()) {
+    if (!isAuthoritativeScorerCommand(command)) {
+      continue;
+    }
+
+    const output = outputByCall.get(callId);
+    if (!output?.stdout.trim()) {
+      continue;
+    }
+
+    return ScorerReportSchema.parse(JSON.parse(output.stdout));
+  }
+
+  throw new Error("Hosted shell completed without parseable score_repo.py JSON output.");
+}
+
+function isAuthoritativeScorerCommand(command: string): boolean {
+  return command.includes("score_repo.py") && !command.includes("--list-scopes");
+}
+
+function buildAnalysisResult(
+  summary: AnalysisSummary,
+  scorerReport: ScorerReport,
+): AnalysisResult {
+  return AnalysisResultSchema.parse({
+    repoUrl: "https://github.com/placeholder/placeholder",
+    normalizedRepo: "placeholder/placeholder",
+    evaluatedScope: scorerReport.evaluated_scope,
+    discoveredScopes: scorerReport.discovered_scopes,
+    score: scorerReport.score,
+    maxScore: scorerReport.max_score,
+    scorePercentage: scorerReport.score_percentage,
+    summary: summary.summary,
+    quickWins: scorerReport.quick_wins,
+    metrics: {
+      bootstrap_self_sufficiency: mapScorerMetric(
+        scorerReport.metrics.bootstrap_self_sufficiency,
+      ),
+      task_entrypoints: mapScorerMetric(scorerReport.metrics.task_entrypoints),
+      validation_harness: mapScorerMetric(scorerReport.metrics.validation_harness),
+      lint_format_gates: mapScorerMetric(scorerReport.metrics.lint_format_gates),
+      agent_repo_map: mapScorerMetric(scorerReport.metrics.agent_repo_map),
+      structured_docs: mapScorerMetric(scorerReport.metrics.structured_docs),
+      decision_records: mapScorerMetric(scorerReport.metrics.decision_records),
+    },
+  });
+}
+
+function mapScorerMetric(metric: ScorerReport["metrics"]["bootstrap_self_sufficiency"]) {
+  return {
+    score: metric.score,
+    confidence: metric.confidence,
+    evidence: metric.evidence,
+    gaps: metric.gaps,
+    nextStep: metric.next_step,
+  };
 }
 
 function extractResponseText(response: Response): string {

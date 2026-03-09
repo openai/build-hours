@@ -32,8 +32,14 @@ export async function POST(request: Request): Promise<Response> {
 
   const parsed = AnalyzeRequestSchema.safeParse(body);
   if (!parsed.success) {
+    const fieldErrors = parsed.error.flatten().fieldErrors;
     return Response.json(
-      { message: "Request body must include repoUrl." },
+      {
+        message:
+          fieldErrors.repoUrl?.[0] ??
+          fieldErrors.customInstructions?.[0] ??
+          "Request body must include repoUrl.",
+      },
       { status: 400 },
     );
   }
