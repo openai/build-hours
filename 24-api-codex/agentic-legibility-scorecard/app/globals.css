@@ -1,0 +1,55 @@
+:root {
+  color-scheme: light;
+  --background: #f4efe6;
+  --background-soft: #fffaf4;
+  --foreground: #102033;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100vh;
+  max-width: 100vw;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(230, 113, 63, 0.16), transparent 26%),
+    radial-gradient(circle at top right, rgba(41, 132, 122, 0.14), transparent 24%),
+    linear-gradient(180deg, var(--background-soft), var(--background));
+  color: var(--foreground);
+  font-family: var(--font-body), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-mono), monospace;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
