@@ -1,7 +1,4 @@
 import type { CharacterConfig } from '../gameobjects/Character';
-import { StaticDialogueAgent } from '../dialogue/StaticDialogueAgent';
-import { ResponsesDialogueAgent } from '../dialogue/ResponsesDialogueAgent';
-import { OpenAIDialogueAgent } from '../dialogue/OpenAIAgent';
 import { samAgent, wendyAgent } from './characters';
 
 export type NpcConfig = Omit<

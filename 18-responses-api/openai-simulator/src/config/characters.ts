@@ -1,4 +1,5 @@
-import { OpenAIDialogueAgent } from '../dialogue/OpenAIAgent';
+import type { Tool } from "openai/resources/responses/responses";
+import { OpenAIDialogueAgent } from "../dialogue/OpenAIAgent";
 
 const WENDY_INSTRUCTIONS = `
 # Backstory
@@ -53,61 +54,60 @@ Before making any decisions or providing instructions, carefully reason through 
 `;
 
 const MCP_TOOL = {
-    type: 'mcp',
-    server_label: 'linear_mcp_server',
-    server_url: 'https://mcp.linear.app/mcp',
-    server_description: 'Linear MCP Server',
-    authorization: import.meta.env.VITE_LINEAR_API_KEY,
-    allowed_tools: [
-        'get_issue',
-        'list_issues',
-        'create_issue',
-        'update_issue',
-        'list_issue_statuses',
-        'list_projects',
-        'get_project',
-    ],
-    require_approval: 'always',
-};
+  type: "mcp",
+  server_label: "linear_mcp_server",
+  server_url: "https://mcp.linear.app/mcp",
+  server_description: "Linear MCP Server",
+  allowed_tools: [
+    "get_issue",
+    "list_issues",
+    "create_issue",
+    "update_issue",
+    "list_issue_statuses",
+    "list_projects",
+    "get_project",
+  ],
+  require_approval: "always",
+} satisfies Tool.Mcp;
 
 const IMAGE_GENERATION_TOOL = {
-    type: 'image_generation',
-    model: 'gpt-image-1',
-    quality: 'low',
-    size: '1024x1024',
-};
+  type: "image_generation",
+  model: "gpt-image-1",
+  quality: "low",
+  size: "1024x1024",
+} satisfies Tool.ImageGeneration;
 
 const WEB_SEARCH_TOOL = {
-    type: 'web_search',
-};
+  type: "web_search",
+} satisfies Tool;
 
 // -- Characters --
 
 export const samAgent = new OpenAIDialogueAgent({
-    name: 'Sam A',
-    initialMessage: "Hey there. I'm Sam A., CEO of OpenAI—can't wait to hear what you're building.",
-    request_options: {
-        model: 'gpt-5',
-        instructions: SAM_INSTRUCTIONS_BASIC + SAM_INSTRUCTIONS_WITH_TOOLS,
-        reasoning: {
-            effort: 'medium',
-            summary: 'auto',
-        },
-        tools: [MCP_TOOL],
+  name: "Sam A",
+  initialMessage:
+    "Hey there. I'm Sam A., CEO of OpenAI—can't wait to hear what you're building.",
+  request_options: {
+    model: "gpt-5.4-mini",
+    instructions: SAM_INSTRUCTIONS_BASIC + SAM_INSTRUCTIONS_WITH_TOOLS,
+    reasoning: {
+      effort: "low",
+      summary: "auto",
     },
+    tools: [MCP_TOOL],
+  },
 });
 
 export const wendyAgent = new OpenAIDialogueAgent({
-    name: 'Wendy J',
-    initialMessage: "Hey there! I'm Wendy J.—what are we exploring today?",
-    request_options: {
-        model: 'gpt-5',
-        instructions: WENDY_INSTRUCTIONS,
-        reasoning: {
-            effort: 'medium',
-            summary: 'auto',
-        },
-        tools: [WEB_SEARCH_TOOL, IMAGE_GENERATION_TOOL],
+  name: "Wendy J",
+  initialMessage: "Hey there! I'm Wendy J.—what are we exploring today?",
+  request_options: {
+    model: "gpt-5.4-mini",
+    instructions: WENDY_INSTRUCTIONS,
+    reasoning: {
+      effort: "low",
+      summary: "auto",
     },
+    tools: [WEB_SEARCH_TOOL, IMAGE_GENERATION_TOOL],
+  },
 });
-
