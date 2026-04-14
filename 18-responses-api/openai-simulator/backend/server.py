@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import os
-import shlex
 from collections.abc import AsyncIterator
-from pathlib import Path
 from typing import Any
 
 import httpx
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -15,25 +14,8 @@ from fastapi.responses import StreamingResponse
 OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses"
 
 
-def load_local_env() -> None:
-    for env_path in (Path(".env.local"), Path(".env")):
-        if not env_path.exists():
-            continue
-
-        for raw_line in env_path.read_text().splitlines():
-            line = raw_line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-
-            key, value = line.split("=", 1)
-            key = key.strip()
-            if not key or key in os.environ:
-                continue
-
-            os.environ[key] = shlex.split(value.strip())[0] if value.strip() else ""
-
-
-load_local_env()
+load_dotenv(".env.local")
+load_dotenv(".env")
 
 app = FastAPI(title="OpenAI Simulator Backend")
 app.add_middleware(
@@ -84,7 +66,7 @@ async def stream_responses(request: Request) -> StreamingResponse:
 
 
 def hydrate_server_side_tool_auth(upstream_body: dict[str, Any]) -> None:
-    linear_key = os.environ.get("LINEAR_API_KEY") or os.environ.get("VITE_LINEAR_API_KEY")
+    linear_key = os.environ.get("LINEAR_API_KEY")
 
     for tool in upstream_body.get("tools") or []:
         if not isinstance(tool, dict):
