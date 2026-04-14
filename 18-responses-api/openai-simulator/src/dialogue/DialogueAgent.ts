@@ -16,8 +16,7 @@ export type {
     DialogueToolResult,
 } from './BaseDialogueAgent';
 
-export { ResponsesDialogueAgent } from './ResponsesDialogueAgent';
-export type { ResponsesDialogueAgentOptions } from './ResponsesDialogueAgent';
-
+export { OpenAIDialogueAgent } from './OpenAIAgent';
+export type { OpenAIDialogueAgentOptions, OpenAIResponseRequestOptions } from './OpenAIAgent';
 export { StaticDialogueAgent } from './StaticDialogueAgent';
 export type { StaticDialogueAgentOptions } from './StaticDialogueAgent';

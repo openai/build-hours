@@ -11,8 +11,7 @@ export class StartScene extends Phaser.Scene {
 
     create(): void {
         const { width, height } = this.scale;
-        console.log({ width, height });
-        this.add.rectangle(0, 0, width * 2, height * 2, 0x000);
+        this.add.rectangle(0, 0, width, height, 0x000000).setOrigin(0);
 
         this.add
             .text(width / 2, height / 2 - 80, 'OpenAI Simulator', {
@@ -27,7 +26,7 @@ export class StartScene extends Phaser.Scene {
             .setShadow(6, 6, '#000000', 4, true, true);
 
         this.prompt = this.add
-            .text(width / 2, height / 2 + 40, 'press ENTER to start', {
+            .text(width / 2, height / 2 + 40, 'press ENTER or click to start', {
                 fontFamily: '"Abaddon Light", sans-serif',
                 fontSize: '32px',
                 color: '#00ff9d',
@@ -51,9 +50,11 @@ export class StartScene extends Phaser.Scene {
 
         this.enterKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
         keyboard.on('keydown-ENTER', this.handleStart, this);
+        this.input.on(Phaser.Input.Events.POINTER_DOWN, this.handleStart, this);
 
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             keyboard.off('keydown-ENTER', this.handleStart, this);
+            this.input.off(Phaser.Input.Events.POINTER_DOWN, this.handleStart, this);
         });
     }
 
