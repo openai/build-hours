@@ -2,7 +2,7 @@
 
 A Next.js application for generating and post-processing images using the OpenAI API. This was used for OpenAI SF Frontiers event and repurpused for build hours 
 
-<img width="736" alt="Screenshot 2025-05-15 at 7 58 48 AM" src="https://github.com/user-attachments/assets/7df70f06-fcf1-418a-9ac7-2b4f1125e0fd" />
+<img width="736" alt="Image generation demo with an empty image uploader and style modifier options" src="./docs/images/imagegen-demo.png" />
 
 
 ## Features
